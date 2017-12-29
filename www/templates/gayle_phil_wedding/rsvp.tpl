@@ -61,7 +61,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" style="height: 256px">
+						<td colspan="2" style="text-align:center;height: 256px">
 							<textarea id="comment" name="comment" style="width: 90%; height: 100%">{$comment|default:''}</textarea>
 						</td>
 					</tr>
@@ -95,7 +95,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" style="height: 256px">
+						<td colspan="2" style="text-align:center;height: 256px">
 							<textarea id="foodallergies" name="foodallergies" style="width: 90%; height: 100%">{$foodallergies|default:''}</textarea>
 						</td>
 					</tr>

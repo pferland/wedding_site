@@ -15,7 +15,7 @@
 	<tr>
 		<td style="height: 101px" valign="bottom" class="table_bg">
 			<div style="position: absolute;right: 0px;" >
-				<img style="z-index: 1;position: absolute; top: 0px; right: 0px;" class="imagecss" src="/imgs/sunflowers_top_corner.gif" />
+				<img style="z-index: 1;position: absolute; top: 0px; right: 0px;" class="imagecss" src="{$template_url}imgs/sunflowers_top_corner.gif" />
 			</div>
 			<br />
 			<br />

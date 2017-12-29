@@ -12,7 +12,7 @@
 	</tr>
 </table>
 <div style="position: fixed;left: 0px;" >
-	<img style="z-index: 1;position: fixed; bottom: 0px; left: 0px;" class="imagecss" src="/imgs/sunflowers_bottom_corner.gif" />
+	<img style="z-index: 1;position: fixed; bottom: 0px; left: 0px;" class="imagecss" src="{$template_url}imgs/sunflowers_bottom_corner.gif" />
 </div>
 </body>
 
