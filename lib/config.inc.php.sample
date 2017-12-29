@@ -1,0 +1,11 @@
+<?php
+
+// SQL Server values for the RSVP and Guestbook info.
+$sql_host = 'localhost';
+$sql_user = 'sqluser';
+$sql_pwd  = 'sqlpswd';
+$db       = 'wedding';
+$srvc     = 'mysql';
+
+// Date of the wedding, used for the count down timer.
+$end_date = '10/27/2018';
