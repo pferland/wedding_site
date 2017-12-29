@@ -1,11 +1,19 @@
 <?php
 
-// SQL Server values for the RSVP and Guestbook info.
+// SQL Server values for the RSVP and Guest Book info.
 $sql_host = 'localhost';
 $sql_user = 'sqluser';
 $sql_pwd  = 'sqlpswd';
 $db       = 'wedding';
 $srvc     = 'mysql';
 
+// Template Information
+$http_folder = "/var/www/html/";
+$template_folder = "templates/path_to_templates_for_site/";
+$site_url = "http://www.yourdomain.com/";
+
 // Date of the wedding, used for the count down timer.
 $end_date = '10/27/2018';
+
+//Max number of chars that can be written in a guestbook message
+$guestbook_txt_limit = 2048;
