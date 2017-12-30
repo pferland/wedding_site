@@ -15,7 +15,6 @@ class core
         include 'SQL.php';
         require 'smarty/Smarty.class.php';
 
-        $this->endDate = $end_date;  // $end_date is defined in the config.inc.php file.
         $this->guestbook_txt_limit = $guestbook_txt_limit;
 
         $this->smarty = new smarty();
@@ -25,6 +24,8 @@ class core
 
         $this->db = $db;
         $this->SQL = new SQL( array('host'=> $sql_host, 'srvc'=> $srvc, 'db'=> $this->db,'db_user'=> $sql_user,'db_pwd'=> $sql_pwd,'collate'=> 'utf8') );
+
+        $this->endDate = $this->getWeddingDate()["wedding_date"];  // $end_date is defined in the config.inc.php file.
     }
 
     function daysUntil()
@@ -95,7 +96,6 @@ class core
         {
             return $arr[2];
         }
-
         return 0;
     }
 
@@ -158,8 +158,7 @@ class core
             return array();
         }
 
-        $fetch = $query->fetchAll(2);
-        return $fetch;
+        return $query->fetchAll(2)[0];
     }
 
     function getGuestBookEntry($entry = 0)
@@ -177,8 +176,7 @@ class core
             return array();
         }
 
-        $fetch = $prep->fetchAll(2)[0];
-        return $fetch;
+        return $prep->fetchAll(2)[0];
     }
 
     function insertGuestBookPost($data)
@@ -204,14 +202,47 @@ class core
 
     function getStoryData()
     {
-        $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.wedding_story WHERE id = 1");
-        $err = $query->errorInfo();
+        $query = $this->SQL->conn->query("SELECT story FROM `$this->db`.wedding_story WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
         if($err[0] !== "00000")
         {
             return array();
         }
+        return $query->fetchAll(2)[0];
+    }
 
-        $fetch = $query->fetchAll(2)[0];
-        return $fetch;
+    function getWeddingTown()
+    {
+        $query = $this->SQL->conn->query("SELECT wedding_town, wedding_location_name FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
+    }
+
+    function getWeddingDate()
+    {
+        $query = $this->SQL->conn->query("SELECT wedding_date FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
+    }
+
+    function getWeddingDetails()
+    {
+        $query = $this->SQL->conn->query("SELECT wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
+            hotel_name, hotel_location, hotel_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
+            FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
     }
 }

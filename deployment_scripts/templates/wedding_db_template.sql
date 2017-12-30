@@ -52,3 +52,39 @@ CREATE TABLE {{db_name}}.song_request
     song_title varchar(255) NOT NULL,
     song_artist varchar(255) NOT NULL
 );
+
+CREATE TABLE {{db_name}}.details_page_info
+(
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  wedding_location_name varchar(255),
+  wedding_town varchar(255),
+  wedding_date varchar(255),
+  wedding_time varchar(255),
+  wedding_gmaps_link text,
+  wedding_reception_same_location tinyint(1) DEFAULT '0',
+  hotel_name varchar(255),
+  hotel_location varchar(255),
+  hotel_gmaps_link text,
+  reception_name varchar(255),
+  reception_town varchar(255),
+  reception_date varchar(255),
+  reception_time varchar(255),
+  reception_gmaps_link text,
+  wedding_attire varchar(255),
+  reception_attire varchar(255),
+  hotel_room_link text
+);
+
+CREATE TABLE {{db_name}}.wedding_story
+(
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  story text
+);
+
+CREATE TABLE {{db_name}}.registry_links
+(
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  name varchar(255),
+  url text,
+  img_url text
+);

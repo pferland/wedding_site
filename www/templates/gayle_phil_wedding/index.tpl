@@ -19,7 +19,7 @@
 								<br>
 								<br>
 								<span id="wedding-date" style="font-size: 33px;box-sizing: border-box; display: inline; white-space: nowrap;">
-									{$wedding_date} • {$wedding_location}
+									{$wedding_date} • {$wedding_town}
 								</span>
 							</b>
 						</td>

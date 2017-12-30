@@ -2,3 +2,4 @@ lib/config.inc.php
 .idea/
 www/lib/config.inc.php
 deployment_scripts/templates/dev_config.inc.php
+deployment_scripts/templates/dev_data.inc.php

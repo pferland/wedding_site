@@ -2,7 +2,7 @@
 
 if(empty($argv[1]))
 {
-    print("You need to define a config file to be used.\r\nExample:\r\n php deploy.php /wedding_site/deployment scripts/templates/config.inc.php\r\n\r\n");
+    print("You need to define a config file to be used.\r\nExample:\r\n php deploy.php /wedding_site/deployment scripts/templates/config.inc.php scripts/templates/data.inc.php\r\n\r\n");
     exit(1);
 }else
 {
@@ -17,9 +17,28 @@ if( empty($argv[2]) )
     exit(1);
 }else
 {
-    // Load variables from the config file that is defined in the argv
-    include($argv[1]);
-    var_dump($sql_host, $sql_user, $sql_pwd, $db, $http_folder, $template_folder, $site_url, $end_date, $guestbook_txt_limit );
+    // Load variables from the data file that is defined in the argv
+    include($argv[2]);
+    var_dump(
+        $front_page_story,
+        $wedding_location_name,
+        $wedding_town,
+        $wedding_date,
+        $wedding_time,
+        $wedding_gmaps_link,
+        $wedding_reception_same_location,
+        $hotel_name,
+        $hotel_town,
+        $hotel_gmaps_link,
+        $reception_name,
+        $reception_town,
+        $reception_date,
+        $reception_time,
+        $reception_gmaps_link,
+        $wedding_attire,
+        $reception_attire,
+        $hotel_room_link
+    );
 }
 
 /**************************************************************************/
@@ -97,18 +116,18 @@ $conn2->query("USE $db");
 if( $conn2->errorCode() === "00000")
 {
     print("Success!\r\n");
+    $conn->query("exit");
+    $conn = null;
 }else
 {
     print($conn2->errorCode()."\r\n");
     exit(1);
 }
 
-
 print("Now we are going to insert the default data for the site from the data.inc.php file.");
-$prep = $conn2->prepare("INSERT INTO `$db`.`wedding_story` (`story`, `location`, `date`) VALUES (?, ?, ?);");
-$prep->bindParam(1, $story, PDO::PARAM_STR);
-$prep->bindParam(2, $location, PDO::PARAM_STR);
-$prep->bindParam(3, $date, PDO::PARAM_STR);
+
+$prep = $conn2->prepare("INSERT INTO `$db`.`wedding_story` (`story`) VALUES (?);");
+$prep->bindParam(1, $front_page_story, PDO::PARAM_STR);
 $prep->execute();
 if( $conn2->errorCode() === "00000")
 {
@@ -119,7 +138,35 @@ if( $conn2->errorCode() === "00000")
     exit(1);
 }
 
-
+$prep = $conn2->prepare("INSERT INTO `$db`.`details_page_info` (wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
+hotel_name, hotel_location, hotel_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+$prep->bindParam(1, $wedding_location_name, PDO::PARAM_STR);
+$prep->bindParam(2, $wedding_town, PDO::PARAM_STR);
+$prep->bindParam(3, $wedding_date, PDO::PARAM_STR);
+$prep->bindParam(4, $wedding_time, PDO::PARAM_STR);
+$prep->bindParam(5, $wedding_gmaps_link, PDO::PARAM_STR);
+$prep->bindParam(6, $wedding_reception_same_location, PDO::PARAM_INT);
+$prep->bindParam(7, $hotel_name, PDO::PARAM_STR);
+$prep->bindParam(8, $hotel_town, PDO::PARAM_STR);
+$prep->bindParam(9, $hotel_gmaps_link, PDO::PARAM_STR);
+$prep->bindParam(10, $reception_name, PDO::PARAM_STR);
+$prep->bindParam(11, $reception_town, PDO::PARAM_STR);
+$prep->bindParam(12, $reception_date, PDO::PARAM_STR);
+$prep->bindParam(13, $reception_time, PDO::PARAM_STR);
+$prep->bindParam(14, $reception_gmaps_link, PDO::PARAM_STR);
+$prep->bindParam(15, $wedding_attire, PDO::PARAM_STR);
+$prep->bindParam(16, $reception_attire, PDO::PARAM_STR);
+$prep->bindParam(17, $hotel_room_link, PDO::PARAM_STR);
+$prep->execute();
+if( $conn2->errorCode() === "00000")
+{
+    print("Success!\r\n");
+}else
+{
+    print($conn2->errorCode()."\r\n");
+    exit(1);
+}
 
 print("Now we are going to deploy the WWW files to their new home.\r\n");
 print("Copy $argv[1] to: ".$http_folder."lib/config.inc.php\r\n");
