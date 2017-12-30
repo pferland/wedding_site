@@ -29,9 +29,9 @@ switch(strtolower(@$_REQUEST['step']))
         $entry_data = $wedding->getGuestBookEntry($entry);
         #var_dump($entry_data);
         #exit(1);
-        $wedding->smarty->assign('guestname', $entry_data[0]['name']);
-        $wedding->smarty->assign('guesttime', $entry_data[0]['time']);
-        $wedding->smarty->assign('guestmessage', $entry_data[0]['message']);
+        $wedding->smarty->assign('guestname', $entry_data['name']);
+        $wedding->smarty->assign('guesttime', $entry_data['time']);
+        $wedding->smarty->assign('guestmessage', $entry_data['message']);
         $wedding->smarty->display('guestbook_view.tpl');
         break;
 

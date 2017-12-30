@@ -15,21 +15,11 @@
 						<tr>
 							<td style="text-align: center;">
 								<b style="font-weight: normal;">
-								It all started with perfect timing. Phillip and Gayle arrived at their
-								first date at the same moment, and two very nervous people did not have
-								enough time to be concerned. After talking so much the waiter got annoyed,
-								they both knew something special was bound to happen. Bonding over a
-								shared sense of humor, general geekiness, and love of travel and food, Gayle
-								will become Phillip&#39;s permanent Sous Chef.
-								<br>
-								After many cheese plates and adventures, they both knew it was forever.
-								Now, two best friends can&#39;t wait to spend their lives together.
-								<br>
-								Hope to see you at the wedding!
+								{$wedding_story}
 								<br>
 								<br>
 								<span id="wedding-date" style="font-size: 33px;box-sizing: border-box; display: inline; white-space: nowrap;">
-									October 27, 2018 • Dedham, MA
+									{$wedding_date} • {$wedding_location}
 								</span>
 							</b>
 						</td>

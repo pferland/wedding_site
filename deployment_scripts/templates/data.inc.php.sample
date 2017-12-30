@@ -1,0 +1,10 @@
+<?php
+
+// A short story about how you meet. Using HTML entities and HTML tags for formatting.
+$story = "";
+
+// The location that the wedding is taking place at.
+$location = "";
+
+// The date of the Wedding. (Ex: October 28th, 2018 )
+$date = "";

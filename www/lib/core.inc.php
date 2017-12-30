@@ -7,7 +7,7 @@ class core
     public $endDate;
     public $smarty;
     private $SQL;
-
+    private $db;
 
     function __construct()
     {
@@ -23,7 +23,8 @@ class core
         $this->smarty->assign('site_url', $site_url);
         $this->smarty->assign('template_url', $site_url.$template_folder);
 
-        $this->SQL = new SQL( array('host'=> $sql_host, 'srvc'=> $srvc, 'db'=> $db,'db_user'=> $sql_user,'db_pwd'=> $sql_pwd,'collate'=> 'utf8') );
+        $this->db = $db;
+        $this->SQL = new SQL( array('host'=> $sql_host, 'srvc'=> $srvc, 'db'=> $this->db,'db_user'=> $sql_user,'db_pwd'=> $sql_pwd,'collate'=> 'utf8') );
     }
 
     function daysUntil()
@@ -43,7 +44,7 @@ class core
         }
 
         #var_dump($data);
-        $prep = $this->SQL->conn->prepare("INSERT INTO `wedding`.rsvp_confirmed (firstname, lastname, guest, attending, food_allergies, comment, `timestamp`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $prep = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_confirmed (firstname, lastname, guest, attending, food_allergies, comment, `timestamp`) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if($data['noguest'])
         {
             $guest = 0;
@@ -70,7 +71,7 @@ class core
         $rsvp_id = $this->SQL->conn->lastInsertId();
         #var_dump($rsvp_id);
 
-        $prep_g = $this->SQL->conn->prepare("INSERT INTO `wedding`.rsvp_guests (id, rsvp_id, firstname, lastname) VALUES ('', ?, ?, ?)");
+        $prep_g = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_guests (id, rsvp_id, firstname, lastname) VALUES ('', ?, ?, ?)");
 
         $prep_g->bindparam(1, $rsvp_id, PDO::PARAM_INT);
         $prep_g->bindparam(2, $data['guest_firstname'], PDO::PARAM_STR);
@@ -83,7 +84,7 @@ class core
             return $arr[2];
         }
 
-        $prep_s = $this->SQL->conn->prepare("INSERT INTO `wedding`.`song_request` (id, rsvp_id, song_title, song_artist) VALUES ('', ?, ?, ?)");
+        $prep_s = $this->SQL->conn->prepare("INSERT INTO `$this->db`.`song_request` (id, rsvp_id, song_title, song_artist) VALUES ('', ?, ?, ?)");
         $prep_s->bindparam(1, $rsvp_id, PDO::PARAM_INT);
         $prep_s->bindparam(2, $data['song_name'], PDO::PARAM_STR);
         $prep_s->bindparam(3, $data['song_artist'], PDO::PARAM_STR);
@@ -107,7 +108,7 @@ class core
 
         $firstname = substr($data['firstname'], 0, 4).'%';
         $lastname = substr($data['lastname'], 0, 4).'%';
-        $prep_c = $this->SQL->conn->prepare("SELECT * FROM `wedding`.rsvp_validate WHERE firstname like ? AND lastname LIKE ?");
+        $prep_c = $this->SQL->conn->prepare("SELECT * FROM `$this->db`.rsvp_validate WHERE firstname like ? AND lastname LIKE ?");
         $prep_c->bindparam(1, $firstname, PDO::PARAM_STR);
         $prep_c->bindparam(2, $lastname, PDO::PARAM_STR);
 
@@ -126,7 +127,7 @@ class core
             #var_dump("Welp, that sucks for you...");
             return "I am sorry you were not found in the RSVP List, ".$data['firstname']." ".$data['lastname']. " </br> Please contact Gayle or Phil for assistance.";
         }
-        $prep_s = $this->SQL->conn->prepare("SELECT * FROM `wedding`.rsvp_confirmed WHERE firstname like ? AND lastname LIKE ?");
+        $prep_s = $this->SQL->conn->prepare("SELECT * FROM `$this->db`.rsvp_confirmed WHERE firstname like ? AND lastname LIKE ?");
         $prep_s->bindparam(1, $fetch['firstname'], PDO::PARAM_STR);
         $prep_s->bindparam(2, $fetch['lastname'], PDO::PARAM_STR);
         $prep_s->execute();
@@ -150,7 +151,7 @@ class core
 
     function getGuestBookPosts()
     {
-        $query = $this->SQL->conn->query("SELECT * FROM `wedding`.guestbook ORDER BY id ASC");
+        $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.guestbook ORDER BY id ASC");
         $err = $query->errorInfo();
         if($err[0] !== "00000")
         {
@@ -167,7 +168,7 @@ class core
         {
             return "Invalid Entry Record supplied";
         }
-        $prep = $this->SQL->conn->prepare("SELECT * FROM `wedding`.guestbook WHERE id = ?");
+        $prep = $this->SQL->conn->prepare("SELECT * FROM `$this->db`.guestbook WHERE id = ?");
         $prep->bindParam(1, $entry, PDO::PARAM_INT);
         $prep->execute();
         $err = $prep->errorInfo();
@@ -176,7 +177,7 @@ class core
             return array();
         }
 
-        $fetch = $prep->fetchAll(2);
+        $fetch = $prep->fetchAll(2)[0];
         return $fetch;
     }
 
@@ -187,7 +188,7 @@ class core
             return "Your message is longer than the maximum defined allowed. Please remove some text.";
         }
 
-        $prep_s = $this->SQL->conn->prepare("INSERT INTO `wedding`.guestbook (`name`, `message`, `time`)  VALUES (?, ?, ?)");
+        $prep_s = $this->SQL->conn->prepare("INSERT INTO `$this->db`.guestbook (`name`, `message`, `time`)  VALUES (?, ?, ?)");
         $prep_s->bindparam(1, $data['name'], PDO::PARAM_STR);
         $prep_s->bindparam(2, $data['message'], PDO::PARAM_STR);
         $prep_s->bindparam(3, date('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -199,5 +200,18 @@ class core
         }else{
             return 0;
         }
+    }
+
+    function getStoryData()
+    {
+        $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.wedding_story WHERE id = 1");
+        $err = $query->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+
+        $fetch = $query->fetchAll(2)[0];
+        return $fetch;
     }
 }
