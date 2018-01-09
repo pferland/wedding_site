@@ -43,3 +43,16 @@ $reception_gmaps_link  = "";
 // The attire of the wedding and reception
 $wedding_attire = "";
 $reception_attire = "";
+
+$main_page_image = ""; //Image that is on the Front page. Location is inside the /templates/<<tmpl folder name<>/imgs/ folder.
+
+$registry_links =  array(
+    0 => array(        // First Registry WebSite
+        'link' => "",  // Link to the First
+        'image' => ""  // name of the Registry website (located in the /templates/<<tmpl folder name<>/imgs/ folder.)
+    ),
+    1 => array(        // Optional, second registry website (add more and increment index number if necessary)
+        'link' => "",
+        'image' => ""
+    )
+);

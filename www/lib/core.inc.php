@@ -18,7 +18,8 @@ class core
         $this->guestbook_txt_limit = $guestbook_txt_limit;
 
         $this->smarty = new smarty();
-        $this->smarty->template_dir = $http_folder.$template_folder;
+        $this->smarty->setCompileDir($http_folder."templates_c");
+        $this->smarty->setTemplateDir($http_folder.$template_folder);
         $this->smarty->assign('site_url', $site_url);
         $this->smarty->assign('template_url', $site_url.$template_folder);
 
@@ -35,6 +36,116 @@ class core
         $datediff = $now - $your_date;
 
         return (floor($datediff / (60 * 60 * 24))/ (-1));
+    }
+
+    function getGuestBookEntry($entry = 0)
+    {
+        if($entry === 0)
+        {
+            return "Invalid Entry Record supplied";
+        }
+        $prep = $this->SQL->conn->prepare("SELECT * FROM `$this->db`.guestbook WHERE id = ?");
+        $prep->bindParam(1, $entry, PDO::PARAM_INT);
+        $prep->execute();
+        $err = $prep->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+
+        return $prep->fetchAll(2)[0];
+    }
+
+    function getGuestBookPosts()
+    {
+        $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.guestbook ORDER BY id ASC");
+        $err = $query->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+
+        return $query->fetchAll(2)[0];
+    }
+
+    function getStoryData()
+    {
+        $query = $this->SQL->conn->query("SELECT story FROM `$this->db`.wedding_story WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
+    }
+
+    function getRegistryLinks()
+    {
+        $query = $this->SQL->conn->query("SELECT url, img_url FROM `$this->db`.registry_links");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2);
+    }
+
+    function getWeddingDate()
+    {
+        $query = $this->SQL->conn->query("SELECT `wedding_date` FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            #var_dump($err);
+            return array();
+        }
+        #var_dump($query->fetch(2));
+        return $query->fetch(2);
+    }
+
+    function getWeddingDetails()
+    {
+        $query = $this->SQL->conn->query("SELECT wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
+            hotel_name, hotel_location, hotel_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
+            FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
+    }
+
+    function getWeddingTown()
+    {
+        $query = $this->SQL->conn->query("SELECT wedding_town, wedding_location_name FROM `$this->db`.details_page_info WHERE id = 1");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2)[0];
+    }
+
+    function insertGuestBookPost($data)
+    {
+        if(strlen($data['message']) > $this->guestbook_txt_limit)
+        {
+            return "Your message is longer than the maximum defined allowed. Please remove some text.";
+        }
+
+        $prep_s = $this->SQL->conn->prepare("INSERT INTO `$this->db`.guestbook (`name`, `message`, `time`)  VALUES (?, ?, ?)");
+        $prep_s->bindparam(1, $data['name'], PDO::PARAM_STR);
+        $prep_s->bindparam(2, $data['message'], PDO::PARAM_STR);
+        $prep_s->bindparam(3, date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $prep_s->execute();
+        $err = $prep_s->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return $err[2];
+        }else{
+            return 0;
+        }
     }
 
     function insertRsvpData($data = array())
@@ -147,102 +258,5 @@ class core
         {
             return "You have already submitted your RSVP. If you were looking to make a change, please call, text, or email Phil or Gayle.";
         }
-    }
-
-    function getGuestBookPosts()
-    {
-        $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.guestbook ORDER BY id ASC");
-        $err = $query->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-
-        return $query->fetchAll(2)[0];
-    }
-
-    function getGuestBookEntry($entry = 0)
-    {
-        if($entry === 0)
-        {
-            return "Invalid Entry Record supplied";
-        }
-        $prep = $this->SQL->conn->prepare("SELECT * FROM `$this->db`.guestbook WHERE id = ?");
-        $prep->bindParam(1, $entry, PDO::PARAM_INT);
-        $prep->execute();
-        $err = $prep->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-
-        return $prep->fetchAll(2)[0];
-    }
-
-    function insertGuestBookPost($data)
-    {
-        if(strlen($data['message']) > $this->guestbook_txt_limit)
-        {
-            return "Your message is longer than the maximum defined allowed. Please remove some text.";
-        }
-
-        $prep_s = $this->SQL->conn->prepare("INSERT INTO `$this->db`.guestbook (`name`, `message`, `time`)  VALUES (?, ?, ?)");
-        $prep_s->bindparam(1, $data['name'], PDO::PARAM_STR);
-        $prep_s->bindparam(2, $data['message'], PDO::PARAM_STR);
-        $prep_s->bindparam(3, date('Y-m-d H:i:s'), PDO::PARAM_STR);
-        $prep_s->execute();
-        $err = $prep_s->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return $err[2];
-        }else{
-            return 0;
-        }
-    }
-
-    function getStoryData()
-    {
-        $query = $this->SQL->conn->query("SELECT story FROM `$this->db`.wedding_story WHERE id = 1");
-        $err = $this->SQL->conn->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-        return $query->fetchAll(2)[0];
-    }
-
-    function getWeddingTown()
-    {
-        $query = $this->SQL->conn->query("SELECT wedding_town, wedding_location_name FROM `$this->db`.details_page_info WHERE id = 1");
-        $err = $this->SQL->conn->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-        return $query->fetchAll(2)[0];
-    }
-
-    function getWeddingDate()
-    {
-        $query = $this->SQL->conn->query("SELECT wedding_date FROM `$this->db`.details_page_info WHERE id = 1");
-        $err = $this->SQL->conn->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-        return $query->fetchAll(2)[0];
-    }
-
-    function getWeddingDetails()
-    {
-        $query = $this->SQL->conn->query("SELECT wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
-            hotel_name, hotel_location, hotel_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
-            FROM `$this->db`.details_page_info WHERE id = 1");
-        $err = $this->SQL->conn->errorInfo();
-        if($err[0] !== "00000")
-        {
-            return array();
-        }
-        return $query->fetchAll(2)[0];
     }
 }

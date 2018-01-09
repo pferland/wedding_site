@@ -8,7 +8,6 @@ a.link_bar{
     text-align: center;
 }
 
-
 a.guestbooklink{
     color: black;
     font-family: "Brush Script MT";
@@ -17,13 +16,18 @@ a.guestbooklink{
 
 body
 {
-    background-image: url("/imgs/background.png");
+    background-image: url("{{template_url}}/imgs/background.png");
     background-repeat: repeat-y;
     background-size: 100%;
 }
 
+main_page_image
+{
+    background-image: url("{{template_url}}/imgs/{{main_page_image_name}}");
+}
+
 .table_bg {
-    background-image: url("/templates/gayle_phil_wedding/imgs/table_bg.png");
+    background-image: url("{{template_url}}/imgs/table_bg.png");
     background-repeat: repeat;
 }
 
