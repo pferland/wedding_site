@@ -3,10 +3,10 @@
 include 'lib/core.inc.php';
 
 $wedding = new core();
-
 $wedding->smarty->assign('daysuntil', $wedding->daysUntil());
 $wedding->smarty->assign('guestbook_txt_limit', $wedding->guestbook_txt_limit);
 
+$error = null;
 switch(strtolower(@$_REQUEST['step']))
 {
     case "submit":
@@ -36,7 +36,8 @@ switch(strtolower(@$_REQUEST['step']))
         break;
 
     default:
-        $wedding->smarty->assign("guests", $wedding->getGuestBookPosts());
+        $guests = $wedding->getGuestBookPosts();
+        $wedding->smarty->assign("guests", $guests);
         $wedding->smarty->display("guestbook.tpl");
         break;
 }

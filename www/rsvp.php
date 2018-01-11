@@ -4,10 +4,65 @@ include 'lib/core.inc.php';
 
 $wedding = new core();
 $wedding->smarty->assign('daysuntil', $wedding->daysUntil());
+$wedding->smarty->assign('rsvp_comment_txt_limit', $wedding->rsvp_comment_txt_limit);
 
 $error = null;
 switch(strtolower(@$_POST['step']))
 {
+    case "enterguests":
+        $attending = filter_input(INPUT_POST, 'attending', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $firstname = filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $song_name = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $song_artist = filter_input(INPUT_POST, 'song_artist', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
+        if( empty($step_values['attending']) )
+        {
+            $reload = 1;
+            $error[] = "You did not specify if you were accepting or declining.";
+        }
+
+        if( ( empty($firstname) or empty($lastname) ) && ( strtolower($attending) === 'yes'))
+        {
+            $reload = 1;
+            $error[] = "You said you are attending, but did not enter a First or Last Name";
+        }
+        $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($firstname, $lastname);
+        $guest_form_array = array();
+        if ( $num_allowed_guests > 0 )
+        {
+            $loop = $num_allowed_guests + 1;
+            for ($i = 1; ; $i++) {
+                if ($i == $loop) {
+                    break;
+                }
+                $guest_form_array[$i]['number'] = $i;
+            }
+        }else
+        {
+            $GuestData = $wedding->getRsvpGuestData($firstname, $lastname);
+            #var_dump($GuestData);
+
+            $wedding->smarty->assign("title", $GuestData[0]);
+            $wedding->smarty->assign("partnerfirstname", $GuestData[1]);
+            $wedding->smarty->assign("partnerlastname", $GuestData[2]);
+            #exit(1);
+        }
+
+        $wedding->smarty->assign("attending", $attending);
+        $wedding->smarty->assign("firstname", $firstname);
+        $wedding->smarty->assign("lastname", $lastname);
+        $wedding->smarty->assign("comment", $comment);
+        $wedding->smarty->assign("song_name", $song_name);
+        $wedding->smarty->assign("song_artist", $song_artist);
+
+        $wedding->smarty->assign("number_allowed_guest_form_array", $guest_form_array);
+        $wedding->smarty->assign("number_allowed_guests", $num_allowed_guests);
+        $wedding->smarty->display("rsvp_step2.tpl");
+
+        break;
+
     case "submit":
         $error = array();
         $reload = 0;
@@ -22,6 +77,7 @@ switch(strtolower(@$_POST['step']))
         {
             $reload = 1;
             $error[] = "You did not specify if you were accepting or declining.";
+
         }
 
         if( ( empty($step_values['firstname']) or empty($step_values['lastname']) ) && ( strtolower($step_values['attending']) === 'yes'))
@@ -31,6 +87,7 @@ switch(strtolower(@$_POST['step']))
         }
 
         $step_values['noguest'] = (int) filter_input(INPUT_POST, 'noguest', FILTER_SANITIZE_NUMBER_INT);
+        #var_dump($step_values['noguest']);
         $step_values['guest_firstname'] = filter_input(INPUT_POST, 'guest_firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         $step_values['guest_lastname'] = filter_input(INPUT_POST, 'guest_lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         $step_values['foodallergies'] = filter_input(INPUT_POST, 'foodallergies', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
@@ -91,14 +148,14 @@ switch(strtolower(@$_POST['step']))
         }
 
         $val_ret = $wedding->validateRsvpData($step_values);
-        if($val_ret !== 0)
+        if(!is_numeric($val_ret))
         {
             $wedding->smarty->assign('error_array', $val_ret);
             $wedding->smarty->display("rsvp_error.tpl");
             break;
         }else
         {
-            #var_dump($step_values);
+            $step_values['validate_id'] = (int) $val_ret;
             $return = $wedding->insertRsvpData($step_values);
             if ($return !== 0) {
                 $wedding->smarty->assign('error_array', $return);

@@ -4,3 +4,4 @@ www/lib/config.inc.php
 deployment_scripts/templates/dev/
 deployment_scripts/templates/prod/
 image_sources/
+deployment_scripts/address.csv

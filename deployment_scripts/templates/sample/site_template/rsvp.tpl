@@ -5,6 +5,18 @@
 				<h2 style="color: red">{$error}</h2>
 			{/foreach}
 			<script type="application/javascript">
+
+                function CharacterCount() {
+                    var message = document.getElementById('comment');
+                    var chars = message.value.length;
+
+                    document.getElementById('characters').innerHTML = ( {$rsvp_comment_txt_limit} - chars );
+
+                    if (chars > {$rsvp_comment_txt_limit}) {
+                        message.value = message.value.substring(0, {$rsvp_comment_txt_limit});
+                    }
+                }
+
                 function toggleGuest() {
                     var checkbox = document.getElementById('noguest');
                     var guest_first = document.getElementById('guest_firstname');
@@ -57,46 +69,12 @@
 							Comment ( Will not be public )
 						</td>
 						<td>
-							Maximum of 1024 Characters
+							<span id="characters">{$rsvp_comment_txt_limit}</span> Characters Left
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2" style="text-align:center;height: 256px">
-							<textarea id="comment" name="comment" style="width: 90%; height: 100%">{$comment|default:''}</textarea>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							I do not have a guest <input type="checkbox" id="noguest" name="noguest" value="1" {$noguest|default:''} onclick="toggleGuest();" />
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center">
-							Guest First Name:
-						</td>
-						<td>
-							<input style="width:500px;" id="guest_firstname" name="guest_firstname" value="{$guest_firstname|default:''}"/>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center">
-							Guest Last Name:
-						</td>
-						<td>
-							<input style="width:500px;" id="guest_lastname" name="guest_lastname" value="{$guest_lastname|default:''}"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Food Allergies for all party members:
-						</td>
-						<td>
-
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" style="text-align:center;height: 256px">
-							<textarea id="foodallergies" name="foodallergies" style="width: 90%; height: 100%">{$foodallergies|default:''}</textarea>
+							<textarea onkeyup="return CharacterCount();" onkeydown="return CharacterCount();" id="comment" name="comment" style="width: 90%; height: 100%">{$comment|default:''}</textarea>
 						</td>
 					</tr>
 					<tr>
@@ -125,7 +103,7 @@
 							<input type="reset" name="Clear" value="Clear" style="font-size: 23px">
 						</td>
 						<td>
-							<input type="hidden" name="step" value="submit">
+							<input type="hidden" name="step" value="enterguests">
 							<input id="submit" type="submit" name="Submit" style="font-size: 23px" value="Submit">
 						</td>
 					</tr>

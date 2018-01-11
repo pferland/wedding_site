@@ -75,7 +75,7 @@ function recursive_copy($source, $dest){
                     if(!is_dir($dest."/".$file)){
                         mkdir($dest."/".$file);
                     }
-                    cpy($source."/".$file, $dest."/".$file);
+                    recursive_copy($source."/".$file, $dest."/".$file);
                 } else {
                     copy($source."/".$file, $dest."/".$file);
                 }
@@ -190,7 +190,7 @@ if( $conn2->errorCode() === "00000")
 // Insert data for the registry website links
 $prep = $conn2->prepare("INSERT INTO `$db`.`registry_links` (`url`, `img_url`) VALUES (?, ?);");
 
-foreach($regirsty_links as $registry)
+foreach($registry_links as $registry)
 {
     $prep->bindParam(1, $registry['link'], PDO::PARAM_STR);
     $prep->bindParam(2, $registry['image'], PDO::PARAM_STR);
@@ -207,11 +207,20 @@ foreach($regirsty_links as $registry)
 
 print("Now we are going to deploy the WWW files to their new home.\r\n");
 print("Copy $argv[1] to: ".$http_folder."lib/config.inc.php\r\n");
-copy( $argv[1], $http_folder."lib/config.inc.php");
+copy( $argv[1]."config.inc.php", $http_folder."lib/config.inc.php");
 
 print("Deploy the sites templates.\r\n");
 
-recursive_copy($argv[1]."site_template/", $http_folder.$template_folder);
+if(!file_exists($http_folder.$template_folder))
+{
+    mkdir($http_folder.$template_folder);
+}else
+{
+    exit("The folder ".$http_folder.$template_folder." already exists, please choose a different folder or remove it.\r\n");
+}
+
+
+recursive_copy($argv[1]."site_template", substr($http_folder.$template_folder, 0, -1) );
 
 $css_source = file_get_contents($argv[1]."site_template/styles.css");
 $css_modified = str_replace("{{template_url}}", $site_url.$template_folder, $css_source);

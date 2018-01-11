@@ -17,3 +17,6 @@ $end_date = '10/27/2018';
 
 //Max number of chars that can be written in a guestbook message
 $guestbook_txt_limit = 2048;
+
+//Max number of chars that can be written in a rsvp comment message
+$rsvp_comment_txt_limit = 2048;

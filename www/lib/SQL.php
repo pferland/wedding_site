@@ -1,7 +1,7 @@
 <?php
 /*
 SQL.inc.php
-Copyright (C) 2013 Phil Ferland
+Copyright (C) 2017 Phil Ferland
 
 This program is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software Foundation; either
