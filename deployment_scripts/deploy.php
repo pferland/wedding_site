@@ -77,6 +77,7 @@ function recursive_copy($source, $dest){
                     }
                     recursive_copy($source."/".$file, $dest."/".$file);
                 } else {
+                    print("\r\n".$source."/".$file ." -> ". $dest."/".$file."\r\n");
                     copy($source."/".$file, $dest."/".$file);
                 }
             }
@@ -210,11 +211,8 @@ print("Copy $argv[1] to: ".$http_folder."lib/config.inc.php\r\n");
 copy( $argv[1]."config.inc.php", $http_folder."lib/config.inc.php");
 
 print("Deploy the sites templates.\r\n");
-
-if(!file_exists($http_folder.$template_folder))
-{
-    mkdir($http_folder.$template_folder);
-}else
+print($http_folder.$template_folder."\r\n");
+if(!mkdir($http_folder.$template_folder))
 {
     exit("The folder ".$http_folder.$template_folder." already exists, please choose a different folder or remove it.\r\n");
 }

@@ -33,7 +33,7 @@ $options = array(
 $dsn = $srvc.':host='.$sql_host;
 $conn = new PDO($dsn, $sql_user, $sql_pwd, $options);
 
-$prep = $conn->prepare("INSERT INTO `$db`.`rsvp_validate` (`title`, `firstname`, `middlename`, `lastname`, `partnertitle`, `partnerfirstname`, `partnermiddlename`, `partnerlastname`, `namestogether`, `namesformal`, `namessuper-formal`, `namesfamily`, `company`, `address1`, `address2`, `city`, `stateregion`, `postalcode`, `country`, `mainphone`, `cellphone`, `homephone`, `email`, `birthday`, `partnerbirthday`, `anniversary`, `notes`, `groups`, `lastupdated`, `guest`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$prep = $conn->prepare("INSERT INTO `$db`.`rsvp_validate` (`title`, `firstname`, `middlename`, `lastname`, `partnertitle`, `partnerfirstname`, `partnermiddlename`, `partnerlastname`, `namestogether`, `namesformal`, `namessuper-formal`, `namesfamily`, `company`, `address1`, `address2`, `city`, `state`, `postalcode`, `country`, `mainphone`, `cellphone`, `homephone`, `email`, `birthday`, `partnerbirthday`, `anniversary`, `notes`, `groups`, `lastupdated`, `guest`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 foreach($addresses as $key=>$address)
 {
     if($key === 0)

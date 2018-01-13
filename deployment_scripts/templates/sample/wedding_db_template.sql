@@ -19,7 +19,8 @@ CREATE TABLE {{db_name}}.rsvp_confirmed
     attending varchar(3) DEFAULT 'no' NOT NULL,
     food_allergies text,
     comment text,
-    timestamp varchar(255) NOT NULL
+    timestamp varchar(255) NOT NULL,
+    validate_id int(11)
 );
 
 CREATE TABLE {{db_name}}.rsvp_guests
@@ -33,16 +34,36 @@ CREATE TABLE {{db_name}}.rsvp_guests
 CREATE TABLE {{db_name}}.rsvp_validate
 (
     id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    firstname varchar(255) NOT NULL,
-    lastname varchar(255) NOT NULL,
-    guest tinyint(4) DEFAULT '0' NOT NULL,
+    title varchar(255),
+    firstname varchar(255),
+    middlename varchar(255),
+    lastname varchar(255),
+    partnertitle varchar(255),
+    partnerfirstname varchar(255),
+    partnerlastname varchar(255),
+    partnermiddlename varchar(255),
+    namestogether varchar(255),
+    namesformal varchar(255),
+    `namessuper-formal` varchar(255),
+    namesfamily varchar(255),
+    company varchar(255),
     address1 varchar(255),
     address2 varchar(255),
     city varchar(255),
     state varchar(255),
-    zip varchar(255),
-    phone varchar(255),
-    email varchar(255)
+    postalcode varchar(255),
+    country varchar(255),
+    mainphone varchar(255),
+    cellphone varchar(255),
+    homephone varchar(255),
+    email varchar(255),
+    birthday varchar(255),
+    partnerbirthday varchar(255),
+    anniversary varchar(255),
+    notes text,
+    groups text,
+    guest int(11),
+    lastupdated varchar(255)
 );
 
 CREATE TABLE {{db_name}}.song_request
