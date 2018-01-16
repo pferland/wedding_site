@@ -28,7 +28,7 @@
                 }
 			</script>
 			<form action="/rsvp.php" method="post">
-				<h1 align="center" style="font-size: 73px" class="script_header">RSVP   {$number_allowed_guests}</h1>
+				<h1 align="center" style="font-size: 73px" class="script_header">RSVP</h1>
 				<table style="margin: auto; width: 70%; background-color: aliceblue; font-size: 23px; font-weight: bold;" class="table_bg">
 					{if $number_allowed_guests > 0}
 						<tr>
