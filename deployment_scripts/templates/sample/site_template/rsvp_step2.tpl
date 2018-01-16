@@ -28,7 +28,7 @@
                 }
 			</script>
 			<form action="/rsvp.php" method="post">
-				<h1 align="center" style="font-size: 73px" class="script_header">RSVP</h1>
+				<h1 align="center" style="font-size: 73px" class="script_header">RSVP   {$number_allowed_guests}</h1>
 				<table style="margin: auto; width: 70%; background-color: aliceblue; font-size: 23px; font-weight: bold;" class="table_bg">
 					{if $number_allowed_guests > 0}
 						<tr>
@@ -41,16 +41,22 @@
 								I do not have a guest <input type="checkbox" id="noguest" name="noguest" value="1" {$noguest|default:''} onclick="toggleGuest();" />
 							</td>
 						</tr>
+					{elseif  $number_allowed_guests == 0 and $partnerfirstname == ""}
+						<!-- -->
+						<input type="hidden" id="noguest" name="noguest" value="1"/>
+						<br>
 					{else}
 						<input type="hidden" name="noguest" value="1">
 						<tr>
 							<td>
 								Your Guests Name is: {$title} {$partnerfirstname} {$partnerlastname}.
+								<input type="hidden" name="guest_firstname" value="{$partnerfirstname}"/>
+								<input type="hidden" name="guest_lastname" value="{$partnerlastname}"/>
+								<input type="hidden" id="noguest" name="noguest" value="0"/>
 							</td>
 						</tr>
-
-
 					{/if}
+
 					{foreach $number_allowed_guest_form_array as $entry}
 					<tr>
 						<td style="text-align: center">
@@ -62,7 +68,11 @@
 							First Name:
 						</td>
 						<td>
-							<input style="width:500px;" id="guest_firstname_{$entry.number}" name="guest_firstname[{$entry.number}]" value=""/>
+							{if $partnerfirstname != "" and $entry.number == 1}
+								<input style="width:500px;" id="guest_firstname_{$entry.number}" name="guest_firstname_{$entry.number}" value="{$partnerfirstname}"/>
+							{else}
+							<input style="width:500px;" id="guest_firstname_{$entry.number}" name="guest_firstname_{$entry.number}" value=""/>
+							{/if}
 						</td>
 					</tr>
 					<tr>
@@ -70,7 +80,11 @@
 							Last Name:
 						</td>
 						<td>
-							<input style="width:500px;" id="guest_lastname_{$entry.number}" name="guest_lastname[{$entry.number}]" value=""/>
+							{if $partnerlastname != "" and $entry.number == 1}
+								<input style="width:500px;" id="guest_lastname_{$entry.number}" name="guest_lastname_{$entry.number}" value="{$partnerlastname}"/>
+							{else}
+								<input style="width:500px;" id="guest_lastname_{$entry.number}" name="guest_lastname_{$entry.number}" value=""/>
+							{/if}
 						</td>
 					</tr>
 					{/foreach}
@@ -79,7 +93,6 @@
 							Food Allergies for all party members:
 						</td>
 						<td>
-
 						</td>
 					</tr>
 					<tr>

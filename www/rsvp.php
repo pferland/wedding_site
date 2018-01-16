@@ -11,8 +11,8 @@ switch(strtolower(@$_POST['step']))
 {
     case "enterguests":
         $attending = filter_input(INPUT_POST, 'attending', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $firstname = filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $firstname = ucwords(strtolower(filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+        $lastname = ucwords(strtolower(filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
         $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
         $song_name = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         $song_artist = filter_input(INPUT_POST, 'song_artist', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
@@ -32,6 +32,15 @@ switch(strtolower(@$_POST['step']))
         $guest_form_array = array();
         if ( $num_allowed_guests > 0 )
         {
+            $GuestData = $wedding->getRsvpGuestData($firstname, $lastname);
+            #var_dump($firstname, $lastname, $GuestData);
+
+            if($GuestData[1] != "")
+            {
+                $wedding->smarty->assign("title", $GuestData[0]);
+                $wedding->smarty->assign("partnerfirstname", $GuestData[1]);
+                $wedding->smarty->assign("partnerlastname", $GuestData[2]);
+            }
             $loop = $num_allowed_guests + 1;
             for ($i = 1; ; $i++) {
                 if ($i == $loop) {
@@ -42,7 +51,7 @@ switch(strtolower(@$_POST['step']))
         }else
         {
             $GuestData = $wedding->getRsvpGuestData($firstname, $lastname);
-            #var_dump($GuestData);
+            #var_dump($firstname, $lastname, $GuestData);
 
             $wedding->smarty->assign("title", $GuestData[0]);
             $wedding->smarty->assign("partnerfirstname", $GuestData[1]);
@@ -69,8 +78,8 @@ switch(strtolower(@$_POST['step']))
         $step_values = array();
 
         $step_values['attending'] = filter_input(INPUT_POST, 'attending', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $step_values['firstname'] = filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $step_values['lastname'] = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $step_values['firstname'] = ucwords(strtolower(filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+        $step_values['lastname'] = ucwords(strtolower(filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
         $step_values['comment'] = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
 
         if( empty($step_values['attending']) )
@@ -88,21 +97,47 @@ switch(strtolower(@$_POST['step']))
 
         $step_values['noguest'] = (int) filter_input(INPUT_POST, 'noguest', FILTER_SANITIZE_NUMBER_INT);
         #var_dump($step_values['noguest']);
-        $step_values['guest_firstname'] = filter_input(INPUT_POST, 'guest_firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $step_values['guest_lastname'] = filter_input(INPUT_POST, 'guest_lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
+        $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($step_values['firstname'], $step_values['lastname']);
+        $step_values['num_allowed_guests'] = $num_allowed_guests;
+
+        if($num_allowed_guests > 1)
+        {
+            for($i = 1; $i <= $num_allowed_guests; $i++) {
+                $step_values['guest_firstname_' . $i] = ucwords(strtolower(filter_input(INPUT_POST, 'guest_firstname_' . $i, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+                $step_values['guest_lastname_' . $i] = ucwords(strtolower(filter_input(INPUT_POST, 'guest_lastname_' . $i, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+
+                if( (empty($step_values['guest_lastname_' . $i]) && !$step_values['noguest']) or (empty($step_values['guest_firstname_' . $i]) && !$step_values['noguest']) )
+                {
+                    $reload = 1;
+                    $error[] = "You indicated you were inviting a guest, but did not enter a First or Last Name for Guest#".$i;
+                }
+
+                if( (!empty($step_values['guest_firstname_' . $i]) && $step_values['noguest']) or ( (!empty($step_values['guest_lastname_' . $i]) && $step_values['noguest']) ) )
+                {
+                    $reload = 1;
+                    $error[] = "You indicated you were not inviting a guest, but entered a name for Guest #".$i;
+                }
+            }
+        }else
+        {
+            $step_values['guest_firstname'] = ucwords(strtolower(filter_input(INPUT_POST, 'guest_firstname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+            $step_values['guest_lastname'] = ucwords(strtolower(filter_input(INPUT_POST, 'guest_lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
+
+            if( (empty($step_values['guest_lastname']) && !$step_values['noguest']) or (empty($step_values['guest_firstname']) && !$step_values['noguest']) )
+            {
+                $reload = 1;
+                $error[] = "You indicated you were inviting a guest, but did not enter a First or Last Name.";
+            }
+
+            if( (!empty($step_values['guest_firstname']) && $step_values['noguest']) or ( (!empty($step_values['guest_lastname']) && $step_values['noguest']) ) )
+            {
+                $reload = 1;
+                $error[] = "You indicated you were not inviting a guest, but entered a name.";
+            }
+        }
+
         $step_values['foodallergies'] = filter_input(INPUT_POST, 'foodallergies', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
-
-        if( (empty($step_values['guest_lastname']) && !$step_values['noguest']) or (empty($step_values['guest_firstname']) && !$step_values['noguest']) )
-        {
-            $reload = 1;
-            $error[] = "You indicated you were inviting a guest, but did not enter a First or Last Name.";
-        }
-
-        if( (!empty($step_values['guest_firstname']) && $step_values['noguest']) or ( (!empty($step_values['guest_lastname']) && $step_values['noguest']) ) )
-        {
-            $reload = 1;
-            $error[] = "You indicated you were not inviting a guest, but entered a name.";
-        }
 
         $step_values['norequest'] = (int) filter_input(INPUT_POST, 'norequest', FILTER_SANITIZE_NUMBER_INT);
         $step_values['song_name'] = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
@@ -146,7 +181,6 @@ switch(strtolower(@$_POST['step']))
             $wedding->smarty->display("rsvp.tpl");
             break;
         }
-
         $val_ret = $wedding->validateRsvpData($step_values);
         if(!is_numeric($val_ret))
         {
@@ -156,6 +190,8 @@ switch(strtolower(@$_POST['step']))
         }else
         {
             $step_values['validate_id'] = (int) $val_ret;
+            #var_dump($step_values);
+            #exit();
             $return = $wedding->insertRsvpData($step_values);
             if ($return !== 0) {
                 $wedding->smarty->assign('error_array', $return);

@@ -43,10 +43,10 @@ class core
         $firstname_like = substr($firstname, 0, 4).'%';
         $lastname_like = substr($lastname, 0, 4).'%';
         $prep_c = $this->SQL->conn->prepare("SELECT guest FROM `$this->db`.rsvp_validate WHERE firstname like ? AND lastname LIKE ? OR partnerfirstname like ? AND partnerlastname LIKE ?");
-        $prep_c->bindparam(1, $firstname, PDO::PARAM_STR);
-        $prep_c->bindparam(2, $lastname, PDO::PARAM_STR);
-        $prep_c->bindparam(3, $firstname, PDO::PARAM_STR);
-        $prep_c->bindparam(4, $lastname, PDO::PARAM_STR);
+        $prep_c->bindparam(1, $firstname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(2, $lastname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(3, $firstname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(4, $lastname_like, PDO::PARAM_STR);
 
         $prep_c->execute();
 
@@ -227,10 +227,10 @@ class core
         $prep = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_confirmed (firstname, lastname, guest, attending, food_allergies, comment, `timestamp`, `validate_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         if($data['noguest'])
         {
-            $guest = 0;
+            $guest = 1;
         }else
         {
-            $guest = 1;
+            $guest = 0;
         }
         $prep->bindparam(1, $data['firstname'], PDO::PARAM_STR);
         $prep->bindparam(2, $data['lastname'], PDO::PARAM_STR);
@@ -255,16 +255,35 @@ class core
         if(!$data['noguest'])
         {
             $prep_g = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_guests (id, rsvp_id, firstname, lastname) VALUES ('', ?, ?, ?)");
+            if($data['num_allowed_guests'] > 1)
+            {
+                for($i=1; $i<=$data['num_allowed_guests']; $i++)
+                {
+                    $prep_g->bindparam(1, $rsvp_id, PDO::PARAM_INT);
+                    $prep_g->bindparam(2, $data['guest_firstname_'.$i], PDO::PARAM_STR);
+                    $prep_g->bindparam(3, $data['guest_lastname_'.$i], PDO::PARAM_STR);
+                    $prep_g->execute();
 
-            $prep_g->bindparam(1, $rsvp_id, PDO::PARAM_INT);
-            $prep_g->bindparam(2, $data['guest_firstname'], PDO::PARAM_STR);
-            $prep_g->bindparam(3, $data['guest_lastname'], PDO::PARAM_STR);
+                    $arr = $prep_g->errorInfo();
 
-            $prep_g->execute();
-            $arr = $prep_g->errorInfo();
-            if ($arr[0] !== "00000") {
-                return $arr[2];
+                    if ($arr[0] !== "00000") {
+                        return $arr;
+                    }
+                }
+            }else
+            {
+                $prep_g->bindparam(1, $rsvp_id, PDO::PARAM_INT);
+                $prep_g->bindparam(2, $data['guest_firstname'], PDO::PARAM_STR);
+                $prep_g->bindparam(3, $data['guest_lastname'], PDO::PARAM_STR);
+                $prep_g->execute();
+
+                $arr = $prep_g->errorInfo();
+
+                if ($arr[0] !== "00000") {
+                    return $arr;
+                }
             }
+
         }
 
         if(!$data['norequest'])
