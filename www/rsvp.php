@@ -151,6 +151,8 @@ switch(strtolower(@$_POST['step']))
 
         if($reload)
         {
+            $step_values['error_msg_array'] = $error;
+            $wedding->SentRSVPAlert($step_values['firstname']." ".$step_values['lastname'], $step_values);
             $wedding->smarty->assign("error_array", $error);
             $wedding->smarty->assign("firstname", $step_values['firstname']);
             $wedding->smarty->assign("lastname", $step_values['lastname']);
@@ -184,6 +186,8 @@ switch(strtolower(@$_POST['step']))
         $val_ret = $wedding->validateRsvpData($step_values);
         if(!is_numeric($val_ret))
         {
+            $step_values['__NotValidated'] = $val_ret;
+            $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
             $wedding->smarty->assign('error_array', $val_ret);
             $wedding->smarty->display("rsvp_error.tpl");
             break;
@@ -193,10 +197,13 @@ switch(strtolower(@$_POST['step']))
             #var_dump($step_values);
             #exit();
             $return = $wedding->insertRsvpData($step_values);
+            $step_values['insert_return'] = $return;
             if ($return !== 0) {
+                $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
                 $wedding->smarty->assign('error_array', $return);
                 $wedding->smarty->display("rsvp_error.tpl");
             }
+            $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
             $wedding->smarty->display("rsvp_final.tpl");
         }
         break;

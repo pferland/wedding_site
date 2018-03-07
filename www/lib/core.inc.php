@@ -18,7 +18,7 @@ class core
         $this->GuestBookAlertSendFromEmail = $GuestBookAlertSendFromEmail;
         $this->GuestBookAlertSendFromEmail_PWD = $GuestBookAlertSendFromEmail_PWD;
         $this->GuestBookAlertSendFlag = $GuestBookAlertSendFlag;
-
+        $this->RSVPAlertSendToEmail = $RSVPAlertSendToEmail;
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
 
@@ -65,17 +65,27 @@ class core
 
         $compiled = str_replace('{$guestmessage}', $message, $compiled);
 
-        $this->SendEmail($subject, $compiled);
+        $this->SendEmail( $this->GuestBookAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $compiled);
     }
 
-    function SendEmail($subject = 'There was a new entry added to the GuestBook', $message)
+    function SentRSVPAlert($data, $ip)
+    {
+        $data['Remote_IP'] = $ip;
+        $data_string = "<p>".var_export($data, true)."</p>";
+
+        $subject = "New attempt at registering for RSVP ( ".date("Y-m-d H:i:s")."  )";
+
+        $this->SendEmail($this->RSVPAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $data_string);
+    }
+
+    function SendEmail($to, $from, $from_pwd, $subject = 'There was a new entry added to the GuestBook', $message)
     {
         require_once 'Mail.php';
         require_once 'Mail/mime.php';
 
         $headers = array(
-            'From' => $this->GuestBookAlertSendFromEmail,
-            'To' => $this->GuestBookAlertSendToEmail,
+            'From' => $from,
+            'To' => $to,
             'Subject' => $subject
         );
 
@@ -93,8 +103,8 @@ class core
             'host' => 'ssl://smtp.gmail.com',
             'port' => '465',
             'auth' => true,
-            'username' => $this->GuestBookAlertSendFromEmail,
-            'password' => $this->GuestBookAlertSendFromEmail_PWD
+            'username' => $from,
+            'password' => $from_pwd
         ));
         $sent = $mail->send($this->GuestBookAlertSendToEmail, $headers, $body);
 
@@ -283,9 +293,6 @@ class core
         {
             return $err[2];
         }else{
-            if($this->GuestBookAlertSendFlag) {
-                $this->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
-            }
             return 0;
         }
     }
