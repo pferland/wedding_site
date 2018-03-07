@@ -20,3 +20,13 @@ $guestbook_txt_limit = 2048;
 
 //Max number of chars that can be written in a rsvp comment message
 $rsvp_comment_txt_limit = 2048;
+
+//Enable or Disable Email Alerts for the GuestBook
+$GuestBookAlertSendFlag = false;
+
+//Email addresses to send the GuestBook alerts too
+$GuestBookAlertSendToEmail = "wedding_site_admin@domain.com";
+
+//Email addresses to use to send the GuestBook alerts
+$GuestBookAlertSendFromEmail = "wedding_guestbook_alerts@domain.com";
+$GuestBookAlertSendFromEmail_PWD = "password";

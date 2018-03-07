@@ -11,7 +11,8 @@ switch(strtolower(@$_REQUEST['step']))
 {
     case "submit":
         $data['name'] = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $data['message'] = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $data['message'] = nl2br(htmlentities($_REQUEST['message'])); // Encode to HTML Entities first, then covert /n to <br>
+
         $ret = $wedding->insertGuestBookPost($data);
         if($ret === 0)
         {
@@ -27,8 +28,6 @@ switch(strtolower(@$_REQUEST['step']))
     case "view":
         $entry = filter_input(INPUT_GET, 'entry', FILTER_SANITIZE_NUMBER_INT);
         $entry_data = $wedding->getGuestBookEntry($entry);
-        #var_dump($entry_data);
-        #exit(1);
         $wedding->smarty->assign('guestname', $entry_data['name']);
         $wedding->smarty->assign('guesttime', $entry_data['time']);
         $wedding->smarty->assign('guestmessage', $entry_data['message']);

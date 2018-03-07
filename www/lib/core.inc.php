@@ -14,8 +14,16 @@ class core
         include 'SQL.php';
         require 'smarty/Smarty.class.php';
 
+        $this->GuestBookAlertSendToEmail = $GuestBookAlertSendToEmail;
+        $this->GuestBookAlertSendFromEmail = $GuestBookAlertSendFromEmail;
+        $this->GuestBookAlertSendFromEmail_PWD = $GuestBookAlertSendFromEmail_PWD;
+        $this->GuestBookAlertSendFlag = $GuestBookAlertSendFlag;
+
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
+
+        $this->http_folder = $http_folder;
+        $this->template_folder = $template_folder;
 
         $this->smarty = new smarty();
         $this->smarty->setCompileDir($http_folder."templates_c");
@@ -36,6 +44,67 @@ class core
         $datediff = $now - $your_date;
 
         return (floor($datediff / (60 * 60 * 24))/ (-1));
+    }
+
+    function SendGuestBookAlert($guestname, $message, $id, $ip)
+    {
+        $subject = 'There was a new entry added to the GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+
+        $template = file_get_contents($this->http_folder.$this->template_folder."/guestbook_alert.tpl");
+
+        // Message
+        $compiled = str_replace('{$message}', $message, $template);
+
+        $compiled = str_replace('{$guestname}', $guestname, $compiled);
+
+        $compiled = str_replace('{$guesttime}', date("Y-m-d H:i:s"), $compiled);
+
+        $compiled = str_replace('{$guestIP}', $ip, $compiled);
+
+        $compiled = str_replace('{$guestID}', $id, $compiled);
+
+        $compiled = str_replace('{$guestmessage}', $message, $compiled);
+
+        $this->SendEmail($subject, $compiled);
+    }
+
+    function SendEmail($subject = 'There was a new entry added to the GuestBook', $message)
+    {
+        require_once 'Mail.php';
+        require_once 'Mail/mime.php';
+
+        $headers = array(
+            'From' => $this->GuestBookAlertSendFromEmail,
+            'To' => $this->GuestBookAlertSendToEmail,
+            'Subject' => $subject
+        );
+
+        // Creating the Mime message
+        $mime = new Mail_mime("\n");
+
+        // Setting the body of the email
+        $mime->setHTMLBody($message);
+
+        $body = $mime->get();
+        $headers = $mime->headers($headers);
+
+        // Sending the email
+        $mail =& Mail::factory('smtp', array(
+            'host' => 'ssl://smtp.gmail.com',
+            'port' => '465',
+            'auth' => true,
+            'username' => $this->GuestBookAlertSendFromEmail,
+            'password' => $this->GuestBookAlertSendFromEmail_PWD
+        ));
+        $sent = $mail->send($this->GuestBookAlertSendToEmail, $headers, $body);
+
+        if (PEAR::isError($sent)) {
+            echo($sent->getMessage());
+            return 1;
+        } else {
+            #echo('Message successfully sent!');
+            return 0;
+        }
     }
 
     function getAllowedGuestsForAttendee($firstname = "", $lastname = "")
@@ -207,11 +276,16 @@ class core
         $prep_s->bindparam(2, $data['message'], PDO::PARAM_STR);
         $prep_s->bindparam(3, date('Y-m-d H:i:s'), PDO::PARAM_STR);
         $prep_s->execute();
+        $id = $this->SQL->conn->lastInsertId();
+
         $err = $prep_s->errorInfo();
         if($err[0] !== "00000")
         {
             return $err[2];
         }else{
+            if($this->GuestBookAlertSendFlag) {
+                $this->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
+            }
             return 0;
         }
     }

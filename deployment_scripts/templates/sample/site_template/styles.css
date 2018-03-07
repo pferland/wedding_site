@@ -21,7 +21,28 @@ body
     background-size: 100%;
 }
 
-main_page_image
+.tablewall {
+    border-collapse: collapse;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+.cellwall {
+    border-left-style: solid;
+    border-left-color: black;
+    border-left-width: 1px;
+    border-top-style: solid;
+    border-top-color: black;
+    border-top-width: 1px;
+    border-right-style: solid;
+    border-right-color: black;
+    border-right-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+    border-bottom-width: 1px;
+}
+
+.main_page_image
 {
     background-image: url("{{template_url}}/imgs/{{main_page_image_name}}");
 }

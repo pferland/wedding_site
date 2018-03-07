@@ -5,18 +5,15 @@
 			<br />
 			<div align="center">
 				<span class="details_header">Photographs</span>
-			</div>
-			<table style="width: 100%" class="photos_table" cellpadding="2">
-				<tr>
-					<td style="width: 484px" class="style13">Engagement Photos:</td>
-					<td class="style13">&nbsp;</td>
-				</tr>
-			</table>
-			<br />
-			<div align="center">
-				<table style="width: 40%">
+				<table style="height: 75%; z-index: 1;position: relative;">
 					<tr>
-						<td align="center">More will be uploaded soon after the Wedding</td>
+						<td>
+							<div align="center">
+								<img height="400" src="/templates/default/imgs/photos/20170813_124651.jpg" /><img height="400" src="/templates/default/imgs/photos/0211171717b.jpg" /><img height="400" src="/templates/default/imgs/photos/20170924_072725.jpg" /><br />
+								<img height="400" src="/templates/default/imgs/photos/20180115_083610.jpg" /><img height="400" src="/templates/default/imgs/photos/MAC_6316-Edit.jpg" /><img height="400" src="/templates/default/imgs/photos/2017-10-23_15.40.12.jpg" /><br />
+								<img height="400" src="/templates/default/imgs/photos/2017-03-13_09.27.27.jpg" /><img height="400" src="/templates/default/imgs/photos/20170828_194207.jpg" /><img height="400" src="/templates/default/imgs/photos/0211171717b.jpg" /><br />
+							</div>
+						</td>
 					</tr>
 				</table>
 			</div>

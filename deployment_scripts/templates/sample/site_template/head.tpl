@@ -27,8 +27,9 @@
 			<br />
 			<div align="center">
 			<span class="links_style" style="font-size: 33px; z-index:1000; position:relative;">
-				<a class="link_bar" href="index.php">OUR WEDDING</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<a class="link_bar" href="index.php">HOME</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="details.php">DETAILS</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<a class="link_bar" href="weddingparty.php">WEDDING PARTY</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="photos.php">PHOTOS</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="registry.php">REGISTRY</a>&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="rsvp.php">RSVP</a>&nbsp;&nbsp;&nbsp;&nbsp;

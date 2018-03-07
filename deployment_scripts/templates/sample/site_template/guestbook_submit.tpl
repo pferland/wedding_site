@@ -8,20 +8,18 @@
 					</th>
 				</tr>
 			</table>
-			<table style="margin: auto; width: 50%; background-color: aliceblue">
+			<table style="text-align:center; margin: auto; width: 70%; background-color: aliceblue; font-size: 23px; font-weight: bold;" class="table_bg">
 				<tr>
-					<th colspan="3">Guest Book Posts</th>
+					<th colspan="2">Guest Book Posts</th>
 				</tr>
 				<tr>
-					<td>Date:</td>
 					<td>Name</td>
-					<td>Comment</td>
+					<td>Date:</td>
 				</tr>
 				{foreach $guests as $guest}
 					<tr>
+						<td><a class="guestbooklink" href="{$site_url}guestbook.php?step=view&entry={$guest.id}">{$guest.name}</a></td>
 						<td>{$guest.time}</td>
-						<td>{$guest.name}</td>
-						<td>{$guest.message}</td>
 					</tr>
 				{/foreach}
 			</table>
