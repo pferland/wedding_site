@@ -18,7 +18,11 @@ class core
         $this->GuestBookAlertSendFromEmail = $GuestBookAlertSendFromEmail;
         $this->GuestBookAlertSendFromEmail_PWD = $GuestBookAlertSendFromEmail_PWD;
         $this->GuestBookAlertSendFlag = $GuestBookAlertSendFlag;
+
         $this->RSVPAlertSendToEmail = $RSVPAlertSendToEmail;
+        $this->RSVPAlertSendFromEmail = $RSVPAlertSendFromEmail;
+        $this->RSVPAlertSendFromEmail_PWD = $RSVPAlertSendFromEmail_PWD;
+
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
 
@@ -75,7 +79,7 @@ class core
 
         $subject = "New attempt at registering for RSVP ( ".date("Y-m-d H:i:s")."  )";
 
-        $this->SendEmail($this->RSVPAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $data_string);
+        $this->SendEmail($this->RSVPAlertSendToEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
     }
 
     function SendEmail($to, $from, $from_pwd, $subject = 'There was a new entry added to the GuestBook', $message)
@@ -131,11 +135,19 @@ class core
 
         $err = $prep_c->errorInfo();
 
+        $ret = $prep_c->fetchAll(2);
         if($err[0] !== "00000")
         {
             return $err[2];
         }
-        return (int) $prep_c->fetchAll(2)[0]['guest'];
+
+        if(is_null(@$ret[0]))
+        {
+            return 0;
+        }else
+        {
+            return (int) $ret[0]['guest'];
+        }
     }
 
     function getGuestBookEntry($entry = 0)
@@ -213,16 +225,13 @@ class core
         {
             return $err[2];
         }
-        $fetch = $prep_c->fetchAll(2)[0];
+        $fetch = @$prep_c->fetchAll(2)[0];
         #var_dump($fetch);
         if( ($fetch['partnerfirstname'] == "") OR ($fetch['partnerlastname'] == ""))
         {
             //They have no partner and are not allowed a guest.
             return 0;
         }
-
-        #print($firstname." == ".substr($fetch['partnerfirstname'], 0, 4)." AND ".$lastname." == ".substr($fetch['partnerlastname'], 0, 4));
-        #exit(0);
 
         if( $firstname == substr($fetch['partnerfirstname'], 0, 4) AND  $lastname == substr($fetch['partnerlastname'], 0, 4))
         {
@@ -406,7 +415,7 @@ class core
         {
             return $err[2];
         }
-        $fetch = $prep_c->fetchAll(2)[0];
+        $fetch = @$prep_c->fetchAll(2)[0];
         if($fetch == false)
         {
             #var_dump("Welp, that sucks for you...");
