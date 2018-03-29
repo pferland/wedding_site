@@ -22,7 +22,6 @@ $guestbook_txt_limit = 2048;
 $rsvp_comment_txt_limit = 2048;
 
 
-
 //GuestBook Alert
 //Guest Book Alerts will send an email with the Guests Name, Message,
 //SQL Row ID, and the IP it was sent from.
@@ -37,10 +36,20 @@ $GuestBookAlertSendToEmail = "wedding_site_admin@domain.com";
 $GuestBookAlertSendFromEmail = "wedding_guestbook_alerts@domain.com";
 $GuestBookAlertSendFromEmail_PWD = "password";
 
+// An array of values that will be searched for to detect spam. Most guests are not going to be entering these phrases.
+$GuestbookSpamList = array(
+    '<a ',
+    'href=',
+    'href =',
+    'href = ',
+    'loans online'
+);
 
 
 //RSVP Attempt and Success Alerts
 //Data is just an array of the inputted data from the user including the IP address of the user.
+
+$RSVPAlertSendFlag = true;
 
 //Email address to send RSVP attempts and successes to.
 $RSVPAlertSendToEmail = "wedding_coordinator@domain.com";

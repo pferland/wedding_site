@@ -14,16 +14,12 @@ switch(strtolower(@$_REQUEST['step']))
         $data['message'] = nl2br(htmlentities($_REQUEST['message'])); // Encode to HTML Entities first, then covert /n to <br>
 
         $ret = $wedding->insertGuestBookPost($data);
-        if($ret === 0)
+        if(!is_array($ret))
         {
-            if($wedding->GuestBookAlertSendFlag) {
-                $wedding->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
-            }
+            $wedding->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
             $message = "Thank you for signing our Guest Book!";
         }else{
-            if($wedding->GuestBookAlertSendFlag) {
-                $wedding->SendGuestBookAlert($data['name'], $data['message']."<br>Error Message: ".$ret, $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
-            }
+            $wedding->SendGuestBookAlert($data['name'], $data['message']."<br>Error Message: ".$ret, $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
             $message = "There was an error with submitting your message " . $ret ;
         }
         $wedding->smarty->assign('message', $message);
@@ -36,7 +32,8 @@ switch(strtolower(@$_REQUEST['step']))
         $entry_data = $wedding->getGuestBookEntry($entry);
         $wedding->smarty->assign('guestname', $entry_data['name']);
         $wedding->smarty->assign('guesttime', $entry_data['time']);
-        $wedding->smarty->assign('guestmessage', $entry_data['message']);
+        $text = wordwrap($entry_data['message'], 75, "<br />\n", true);
+        $wedding->smarty->assign('guestmessage', $text);
         $wedding->smarty->display('guestbook_view.tpl');
         break;
 

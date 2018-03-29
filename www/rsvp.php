@@ -16,6 +16,7 @@ switch(strtolower(@$_POST['step']))
         $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
         $song_name = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         $song_artist = filter_input(INPUT_POST, 'song_artist', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $norequest = filter_input(INPUT_POST, 'norequest', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
         if( empty($attending) )
         {
@@ -23,11 +24,35 @@ switch(strtolower(@$_POST['step']))
             $error[] = "You did not specify if you were accepting or declining.";
         }
 
-        if( ( empty($firstname) or empty($lastname) ) && ( strtolower($attending) === 'yes'))
+        if( ( empty($firstname) or empty($lastname) ))
         {
             $reload = 1;
-            $error[] = "You said you are attending, but did not enter a First or Last Name";
+            $error[] = "You did not enter a First or Last Name";
         }
+
+        if($reload)
+        {
+            $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . @$_SERVER['HTTP_X_FORWARDED_FOR']);
+            $wedding->smarty->assign("error_array", $error);
+            $wedding->smarty->assign("firstname", $firstname);
+            $wedding->smarty->assign("lastname", $lastname);
+            $wedding->smarty->assign("comment", $comment);
+
+            if($norequest == 1)
+            {
+                $wedding->smarty->assign("norequest", 'checked');
+                $wedding->smarty->assign("song_artist", "");
+                $wedding->smarty->assign("song_name", "");
+            }else
+            {
+                $wedding->smarty->assign("norequest", '');
+                $wedding->smarty->assign("song_artist", $song_artist);
+                $wedding->smarty->assign("song_name", $song_name);
+            }
+            $wedding->smarty->display("rsvp.tpl");
+            break;
+        }
+
         $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($firstname, $lastname);
         $guest_form_array = array();
         if ( $num_allowed_guests > 0 )
@@ -82,21 +107,25 @@ switch(strtolower(@$_POST['step']))
         $step_values['lastname'] = ucwords(strtolower(filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
         $step_values['comment'] = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
 
+        $step_values['foodallergies'] = filter_input(INPUT_POST, 'foodallergies', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+
+        $step_values['norequest'] = (int) filter_input(INPUT_POST, 'norequest', FILTER_SANITIZE_NUMBER_INT);
+        $step_values['song_name'] = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $step_values['song_artist'] = filter_input(INPUT_POST, 'song_artist', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
+        $step_values['noguest'] = (int) filter_input(INPUT_POST, 'noguest', FILTER_SANITIZE_NUMBER_INT);
+        #var_dump($step_values['noguest']);
+
         if( empty($step_values['attending']) )
         {
             $reload = 1;
             $error[] = "You did not specify if you were accepting or declining.";
-
         }
-
         if( ( empty($step_values['firstname']) or empty($step_values['lastname']) ) && ( strtolower($step_values['attending']) === 'yes'))
         {
             $reload = 1;
             $error[] = "You said you are attending, but did not enter a First or Last Name";
         }
-
-        $step_values['noguest'] = (int) filter_input(INPUT_POST, 'noguest', FILTER_SANITIZE_NUMBER_INT);
-        #var_dump($step_values['noguest']);
 
         $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($step_values['firstname'], $step_values['lastname']);
         $step_values['num_allowed_guests'] = $num_allowed_guests;
@@ -137,27 +166,19 @@ switch(strtolower(@$_POST['step']))
             }
         }
 
-        $step_values['foodallergies'] = filter_input(INPUT_POST, 'foodallergies', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
-
-        $step_values['norequest'] = (int) filter_input(INPUT_POST, 'norequest', FILTER_SANITIZE_NUMBER_INT);
-        $step_values['song_name'] = filter_input(INPUT_POST, 'song_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $step_values['song_artist'] = filter_input(INPUT_POST, 'song_artist', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-
         if( (empty($step_values['norequest']) && empty($step_values['song_name'])) or (empty($step_values['norequest']) && empty($step_values['song_artist'])) )
         {
             $reload = 1;
             $error[] = "You indicated you had a song request, but did not enter all the information.";
         }
-
         if($reload)
         {
             $step_values['error_msg_array'] = $error;
-            $wedding->SentRSVPAlert($step_values['firstname']." ".$step_values['lastname'], $step_values);
+            $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . @$_SERVER['HTTP_X_FORWARDED_FOR']);
             $wedding->smarty->assign("error_array", $error);
             $wedding->smarty->assign("firstname", $step_values['firstname']);
             $wedding->smarty->assign("lastname", $step_values['lastname']);
             $wedding->smarty->assign("comment", $step_values['comment']);
-            $wedding->smarty->assign("error_array", $error);
             $wedding->smarty->assign("guest_firstname", $step_values['guest_firstname']);
             $wedding->smarty->assign("guest_lastname", $step_values['guest_lastname']);
             $wedding->smarty->assign("foodallergies", $step_values['foodallergies']);
@@ -180,7 +201,7 @@ switch(strtolower(@$_POST['step']))
                 $wedding->smarty->assign("norequest", '');
             }
 
-            $wedding->smarty->display("rsvp.tpl");
+            $wedding->smarty->display("rsvp_step2.tpl");
             break;
         }
         $val_ret = $wedding->validateRsvpData($step_values);
@@ -198,8 +219,8 @@ switch(strtolower(@$_POST['step']))
             #exit();
             $return = $wedding->insertRsvpData($step_values);
             $step_values['insert_return'] = $return;
-            if ($return !== 0) {
-                $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . @$_SERVER['HTTP_X_FORWARDED_FOR']);
+            if (!is_numeric($return)) {
+                $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . @$_SERVER['HTTP_X_FORWARDED_FOR'], true);
                 $wedding->smarty->assign('error_array', $return);
                 $wedding->smarty->display("rsvp_error.tpl");
             }

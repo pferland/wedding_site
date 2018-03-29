@@ -22,9 +22,11 @@ class core
         $this->RSVPAlertSendToEmail = $RSVPAlertSendToEmail;
         $this->RSVPAlertSendFromEmail = $RSVPAlertSendFromEmail;
         $this->RSVPAlertSendFromEmail_PWD = $RSVPAlertSendFromEmail_PWD;
+        $this->RSVPAlertSendFlag = $RSVPAlertSendFlag;
 
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
+        $this->SpamArray = $GuestbookSpamList;
 
         $this->http_folder = $http_folder;
         $this->template_folder = $template_folder;
@@ -52,34 +54,47 @@ class core
 
     function SendGuestBookAlert($guestname, $message, $id, $ip)
     {
-        $subject = 'There was a new entry added to the GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+        if($this->GuestBookAlertSendFlag)
+        {
+            $subject = 'There was a new entry added to the GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+            $template = file_get_contents($this->http_folder.$this->template_folder."/guestbook_alert.tpl");
 
-        $template = file_get_contents($this->http_folder.$this->template_folder."/guestbook_alert.tpl");
+            // Message
+            $compiled = str_replace('{$message}', $message, $template);
 
-        // Message
-        $compiled = str_replace('{$message}', $message, $template);
+            $compiled = str_replace('{$guestname}', $guestname, $compiled);
 
-        $compiled = str_replace('{$guestname}', $guestname, $compiled);
+            $compiled = str_replace('{$guesttime}', date("Y-m-d H:i:s"), $compiled);
 
-        $compiled = str_replace('{$guesttime}', date("Y-m-d H:i:s"), $compiled);
+            $compiled = str_replace('{$guestIP}', $ip, $compiled);
 
-        $compiled = str_replace('{$guestIP}', $ip, $compiled);
+            $compiled = str_replace('{$guestID}', $id, $compiled);
 
-        $compiled = str_replace('{$guestID}', $id, $compiled);
+            $compiled = str_replace('{$guestmessage}', $message, $compiled);
 
-        $compiled = str_replace('{$guestmessage}', $message, $compiled);
+            $this->SendEmail( $this->GuestBookAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $compiled);
+        }
 
-        $this->SendEmail( $this->GuestBookAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $compiled);
     }
 
-    function SentRSVPAlert($data, $ip)
+    function SentRSVPAlert($data, $ip, $error_flag = false)
     {
-        $data['Remote_IP'] = $ip;
-        $data_string = "<p>".var_export($data, true)."</p>";
+        if($this->RSVPAlertSendFlag)
+        {
+            $data['Remote_IP'] = $ip;
+            $data_string = "<p>" . var_export($data, true) . "</p>";
 
-        $subject = "New attempt at registering for RSVP ( ".date("Y-m-d H:i:s")."  )";
+            if($error_flag)
+            {
+                $subject = "New Attempt At Registering For RSVP ( " . date("Y-m-d H:i:s") . "  )";
+            }else
+            {
+                $subject = "New Successful Registration For RSVP ( " . date("Y-m-d H:i:s") . "  )";
+            }
 
-        $this->SendEmail($this->RSVPAlertSendToEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
+
+            $this->SendEmail($this->RSVPAlertSendToEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
+        }
     }
 
     function SendEmail($to, $from, $from_pwd, $subject = 'There was a new entry added to the GuestBook', $message)
@@ -289,7 +304,14 @@ class core
         {
             return "Your message is longer than the maximum defined allowed. Please remove some text.";
         }
+        if(!$this->CheckMessageForSpam())
+        {
+            //ret=0 = failed check, we think there is spam in this message.
+            // return 0 to make the spammer think that the message was submitted.
+            return 0;
+        }
 
+        // Insert the message as it has passed all tests.
         $prep_s = $this->SQL->conn->prepare("INSERT INTO `$this->db`.guestbook (`name`, `message`, `time`)  VALUES (?, ?, ?)");
         $prep_s->bindparam(1, $data['name'], PDO::PARAM_STR);
         $prep_s->bindparam(2, $data['message'], PDO::PARAM_STR);
@@ -300,10 +322,21 @@ class core
         $err = $prep_s->errorInfo();
         if($err[0] !== "00000")
         {
-            return $err[2];
+            return $err;
         }else{
-            return 0;
+            return $id;
         }
+    }
+
+    function CheckMessageForSpam($message = "")
+    {
+        foreach($this->SpamArray as $spam)
+        {
+            if (strpos(strtolower($message), $spam)) {
+                return 1;
+            }
+        }
+        return 0;
     }
 
     function insertRsvpData($data = array())
@@ -389,7 +422,7 @@ class core
                 return $arr[2];
             }
         }
-        return 0;
+        return $rsvp_id;
     }
 
     function validateRsvpData($data = array())
