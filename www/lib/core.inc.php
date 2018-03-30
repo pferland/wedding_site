@@ -2,11 +2,24 @@
 
 class core
 {
+    private $GuestBookAlertSendToEmail;
+    private $GuestBookAlertSendFromEmail;
+    private $GuestBookAlertSendFromEmail_PWD;
+    public $GuestBookAlertSendFlag;
+    private $RSVPAlertSendToEmail;
+    private $RSVPAlertSendFromEmail;
+    private $RSVPAlertSendFromEmail_PWD;
+    public $RSVPAlertSendFlag;
     public $guestbook_txt_limit;
+    public $rsvp_comment_txt_limit;
+    private $SpamArray;
+    public $http_folder;
+    public $template_folder;
     public $endDate;
     public $smarty;
     private $SQL;
     private $db;
+    public $env;
 
     function __construct()
     {
@@ -14,18 +27,19 @@ class core
         include 'SQL.php';
         require 'smarty/Smarty.class.php';
 
+        $this->env = @$env;
+
         $this->GuestBookAlertSendToEmail = $GuestBookAlertSendToEmail;
         $this->GuestBookAlertSendFromEmail = $GuestBookAlertSendFromEmail;
         $this->GuestBookAlertSendFromEmail_PWD = $GuestBookAlertSendFromEmail_PWD;
         $this->GuestBookAlertSendFlag = $GuestBookAlertSendFlag;
-
         $this->RSVPAlertSendToEmail = $RSVPAlertSendToEmail;
         $this->RSVPAlertSendFromEmail = $RSVPAlertSendFromEmail;
         $this->RSVPAlertSendFromEmail_PWD = $RSVPAlertSendFromEmail_PWD;
         $this->RSVPAlertSendFlag = $RSVPAlertSendFlag;
-
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
+
         $this->SpamArray = $GuestbookSpamList;
 
         $this->http_folder = $http_folder;
@@ -56,7 +70,7 @@ class core
     {
         if($this->GuestBookAlertSendFlag)
         {
-            $subject = 'There was a new entry added to the GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+            $subject = 'There was a new entry added to the '.$this->env.'GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
             $template = file_get_contents($this->http_folder.$this->template_folder."/guestbook_alert.tpl");
 
             // Message
@@ -86,12 +100,11 @@ class core
 
             if($error_flag)
             {
-                $subject = "New Attempt At Registering For RSVP ( " . date("Y-m-d H:i:s") . "  )";
+                $subject = "New Attempt At Registering For '.$this->env.'RSVP ( " . date("Y-m-d H:i:s") . "  )";
             }else
             {
-                $subject = "New Successful Registration For RSVP ( " . date("Y-m-d H:i:s") . "  )";
+                $subject = "New Successful Registration For '.$this->env.'RSVP ( " . date("Y-m-d H:i:s") . "  )";
             }
-
 
             $this->SendEmail($this->RSVPAlertSendToEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
         }
@@ -126,7 +139,6 @@ class core
             'password' => $from_pwd
         ));
         $sent = $mail->send($this->GuestBookAlertSendToEmail, $headers, $body);
-
         if (PEAR::isError($sent)) {
             echo($sent->getMessage());
             return 1;
@@ -474,5 +486,15 @@ class core
         {
             return "You have already submitted your RSVP. If you were looking to make a change, please call, text, or email Phil or Gayle.";
         }
+    }
+
+    function WordWrapArray($array)
+    {
+        $return = array();
+        foreach( $array as $key=>$element)
+        {
+            $return[] = wordwrap($element, 50, "<br>", true);
+        }
+        return $return;
     }
 }
