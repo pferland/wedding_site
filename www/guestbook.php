@@ -16,7 +16,7 @@ switch(strtolower(@$_REQUEST['step']))
         $ret = $wedding->insertGuestBookPost($data);
         if(!is_array($ret))
         {
-            $wedding->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $wedding->SendGuestBookAlert($data['name'], $data['message'], $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR'], true);
             $message = "Thank you for signing our Guest Book!";
         }else{
             $wedding->SendGuestBookAlert($data['name'], $data['message']."<br>Error Message: ".$ret, $id, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . $_SERVER['HTTP_X_FORWARDED_FOR']);

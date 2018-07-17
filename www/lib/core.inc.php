@@ -66,11 +66,18 @@ class core
         return (floor($datediff / (60 * 60 * 24))/ (-1));
     }
 
-    function SendGuestBookAlert($guestname, $message, $id, $ip)
+    function SendGuestBookAlert($guestname, $message, $id, $ip, $spam = false)
     {
         if($this->GuestBookAlertSendFlag)
         {
-            $subject = 'There was a new entry added to the '.$this->env.'GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+            if($spam)
+            {
+                $subject = 'There was an attempt to add a new entry the '.$this->env.'GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+            }else
+            {
+                $subject = 'There was a new entry added to the '.$this->env.'GuestBook ID: '.$id.'  ( '.date("Y-m-d H:i:s").' )';
+            }
+
             $template = file_get_contents($this->http_folder.$this->template_folder."/guestbook_alert.tpl");
 
             // Message
@@ -162,15 +169,15 @@ class core
 
         $err = $prep_c->errorInfo();
 
-        $ret = $prep_c->fetchAll(2);
         if($err[0] !== "00000")
         {
             return $err[2];
         }
 
+        $ret = $prep_c->fetchAll(2);
         if(is_null(@$ret[0]))
         {
-            return 0;
+            return 1;
         }else
         {
             return (int) $ret[0]['guest'];
@@ -316,7 +323,7 @@ class core
         {
             return "Your message is longer than the maximum defined allowed. Please remove some text.";
         }
-        if(!$this->CheckMessageForSpam())
+        if($this->CheckMessageForSpam($data['message']))
         {
             //ret=0 = failed check, we think there is spam in this message.
             // return 0 to make the spammer think that the message was submitted.
@@ -342,9 +349,14 @@ class core
 
     function CheckMessageForSpam($message = "")
     {
+        var_dump($message);
         foreach($this->SpamArray as $spam)
         {
-            if (strpos(strtolower($message), $spam)) {
+            var_dump($spam);
+            var_dump(strpos(strtolower($message), $spam));
+            if (strpos(strtolower($message), $spam) !== false)
+            {
+                var_dump("spam message found");
                 return 1;
             }
         }
@@ -357,8 +369,21 @@ class core
         {
             return array("Empty Data array passed to method.");
         }
+        var_dump($data);
+        if($this->CheckMessageForSpam($data['comment']))
+        {
+            //ret=0 = failed check, we think there is spam in this message.
+            // return 0 to make the spammer think that the message was submitted.
+            return 20;
+        }
 
-        #var_dump($data);
+        if($this->CheckMessageForSpam($data['foodallergies']))
+        {
+            //ret=0 = failed check, we think there is spam in this message.
+            // return 0 to make the spammer think that the message was submitted.
+            return 20;
+        }
+
         $prep = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_confirmed (firstname, lastname, guest, attending, food_allergies, comment, `timestamp`, `validate_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         if($data['noguest'])
         {
@@ -446,10 +471,10 @@ class core
 
         $firstname = substr($data['firstname'], 0, 4).'%';
         $lastname = substr($data['lastname'], 0, 4).'%';
-        $prep_c = $this->SQL->conn->prepare("SELECT id FROM `$this->db`.rsvp_validate WHERE firstname like ? AND lastname LIKE ? OR partnerfirstname like ? AND partnerlastname LIKE ?");
-        $prep_c->bindparam(1, $firstname, PDO::PARAM_STR);
+
+        /*
+        $prep_c = $this->SQL->conn->prepare("SELECT id FROM `$this->db`.rsvp_validate WHERE lastname LIKE ? OR partnerlastname LIKE ?");
         $prep_c->bindparam(2, $lastname, PDO::PARAM_STR);
-        $prep_c->bindparam(3, $firstname, PDO::PARAM_STR);
         $prep_c->bindparam(4, $lastname, PDO::PARAM_STR);
 
         $prep_c->execute();
@@ -466,6 +491,8 @@ class core
             #var_dump("Welp, that sucks for you...");
             return "I am sorry you were not found in the RSVP List, ".$data['firstname']." ".$data['lastname']. " </br> Please contact Gayle or Phil for assistance.";
         }
+        */
+
         $prep_s = $this->SQL->conn->prepare("SELECT id FROM `$this->db`.rsvp_confirmed WHERE firstname like ? AND lastname LIKE ?");
         $prep_s->bindparam(1, $firstname, PDO::PARAM_STR);
         $prep_s->bindparam(2, $lastname, PDO::PARAM_STR);
@@ -479,10 +506,15 @@ class core
         }
         $fetch_s = $prep_s->fetchAll(2);
 
-        if( empty($fetch_s) )
+        if(empty($fetch_s) and !empty($fetch['id']))
         {
             return $fetch['id'];
-        }else
+
+        }elseif(empty($fetch['id']))
+        {
+            return 0;
+
+        }elseif(!empty($fetch_s['id']))
         {
             return "You have already submitted your RSVP. If you were looking to make a change, please call, text, or email Phil or Gayle.";
         }

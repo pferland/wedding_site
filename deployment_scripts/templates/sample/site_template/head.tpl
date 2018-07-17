@@ -30,7 +30,7 @@
 				<a class="link_bar" href="index.php">HOME</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="details.php">DETAILS</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="weddingparty.php">WEDDING PARTY</a>&nbsp;&nbsp;&nbsp;&nbsp;
-				<a class="link_bar" href="photos.php">PHOTOS</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<a class="link_bar" href="photos.php">PHOTOS</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
 				<a class="link_bar" href="registry.php">REGISTRY</a>&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="rsvp.php">RSVP</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="link_bar" href="guestbook.php">GUEST BOOK</a>
