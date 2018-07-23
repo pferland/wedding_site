@@ -132,7 +132,7 @@ switch(strtolower(@$_POST['step']))
         $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($step_values['firstname'], $step_values['lastname']);
         $step_values['num_allowed_guests'] = $num_allowed_guests;
 
-        var_dump($step_values);
+        #var_dump($step_values);
 
         if($num_allowed_guests > 1)
         {
@@ -183,8 +183,18 @@ switch(strtolower(@$_POST['step']))
             $wedding->smarty->assign("firstname", $step_values['firstname']);
             $wedding->smarty->assign("lastname", $step_values['lastname']);
             $wedding->smarty->assign("comment", $step_values['comment']);
-            $wedding->smarty->assign("guest_firstname", $step_values['guest_firstname']);
-            $wedding->smarty->assign("guest_lastname", $step_values['guest_lastname']);
+            if($num_allowed_guests > 1)
+            {
+                for($i = 1; $i <= $num_allowed_guests; $i++) {
+                    $wedding->smarty->assign("guest_firstname_" + $i, $step_values['guest_firstname_' + $i]);
+                    $wedding->smarty->assign("guest_lastname_" + $i, $step_values['guest_lastname_' + $i]);
+                }
+            }else
+            {
+                $wedding->smarty->assign("guest_firstname", $step_values['guest_firstname']);
+                $wedding->smarty->assign("guest_lastname", $step_values['guest_lastname']);
+            }
+
             $wedding->smarty->assign("foodallergies", $step_values['foodallergies']);
             $wedding->smarty->assign('num_allowed_guests', $num_allowed_guests);
 

@@ -349,14 +349,14 @@ class core
 
     function CheckMessageForSpam($message = "")
     {
-        var_dump($message);
+        #var_dump($message);
         foreach($this->SpamArray as $spam)
         {
-            var_dump($spam);
-            var_dump(strpos(strtolower($message), $spam));
+            #var_dump($spam);
+            #var_dump(strpos(strtolower($message), $spam));
             if (strpos(strtolower($message), $spam) !== false)
             {
-                var_dump("spam message found");
+                #var_dump("spam message found");
                 return 1;
             }
         }
@@ -369,7 +369,7 @@ class core
         {
             return array("Empty Data array passed to method.");
         }
-        var_dump($data);
+        #var_dump($data);
         if($this->CheckMessageForSpam($data['comment']))
         {
             //ret=0 = failed check, we think there is spam in this message.
@@ -384,22 +384,16 @@ class core
             return 20;
         }
 
-        $prep = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_confirmed (firstname, lastname, guest, attending, food_allergies, comment, `timestamp`, `validate_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        if($data['noguest'])
-        {
-            $guest = 1;
-        }else
-        {
-            $guest = 0;
-        }
+        $prep = $this->SQL->conn->prepare("INSERT INTO `$this->db`.rsvp_confirmed (firstname, lastname, guest_firstname, guest_lastname, attending, `food_allergies`, `comment`, `timestamp`, `validate_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $prep->bindparam(1, $data['firstname'], PDO::PARAM_STR);
         $prep->bindparam(2, $data['lastname'], PDO::PARAM_STR);
-        $prep->bindparam(3, $guest, PDO::PARAM_STR);
-        $prep->bindparam(4, $data['attending'], PDO::PARAM_STR);
-        $prep->bindparam(5, $data['foodallergies'], PDO::PARAM_STR);
-        $prep->bindparam(6, $data['comment'], PDO::PARAM_STR);
-        $prep->bindparam(7, date("M d, Y  H:i:s"), PDO::PARAM_STR);
-        $prep->bindparam(8, $data['validate_id'], PDO::PARAM_INT);
+        $prep->bindparam(3, $data['guest_firstname'], PDO::PARAM_STR);
+        $prep->bindparam(4, $data['guest_lastname'], PDO::PARAM_STR);
+        $prep->bindparam(5, $data['attending'], PDO::PARAM_STR);
+        $prep->bindparam(6, $data['foodallergies'], PDO::PARAM_STR);
+        $prep->bindparam(7, $data['comment'], PDO::PARAM_STR);
+        $prep->bindparam(8, date("M d, Y  H:i:s"), PDO::PARAM_STR);
+        $prep->bindparam(9, $data['validate_id'], PDO::PARAM_INT);
         $prep->execute();
 
         $arr = $prep->errorInfo();
@@ -469,29 +463,29 @@ class core
             return array("Empty Data array passed to method.");
         }
 
-        $firstname = substr($data['firstname'], 0, 4).'%';
-        $lastname = substr($data['lastname'], 0, 4).'%';
-
-        /*
-        $prep_c = $this->SQL->conn->prepare("SELECT id FROM `$this->db`.rsvp_validate WHERE lastname LIKE ? OR partnerlastname LIKE ?");
-        $prep_c->bindparam(2, $lastname, PDO::PARAM_STR);
-        $prep_c->bindparam(4, $lastname, PDO::PARAM_STR);
+        $firstname_like = substr($data['firstname'], 0, 4).'%';
+        $lastname_like = substr($data['lastname'], 0, 4).'%';
+        $prep_c = $this->SQL->conn->prepare("SELECT `id` FROM `$this->db`.rsvp_validate WHERE firstname like ? AND lastname LIKE ? OR partnerfirstname like ? AND partnerlastname LIKE ?");
+        $prep_c->bindparam(1, $firstname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(2, $lastname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(3, $firstname_like, PDO::PARAM_STR);
+        $prep_c->bindparam(4, $lastname_like, PDO::PARAM_STR);
 
         $prep_c->execute();
 
         $err = $prep_c->errorInfo();
-
-        if($err[0] !== "00000")
+        #var_dump($err);
+        if($err[0] != "00000")
         {
             return $err[2];
         }
         $fetch = @$prep_c->fetchAll(2)[0];
-        if($fetch == false)
+        /*if($fetch == false)
         {
             #var_dump("Welp, that sucks for you...");
-            return "I am sorry you were not found in the RSVP List, ".$data['firstname']." ".$data['lastname']. " </br> Please contact Gayle or Phil for assistance.";
-        }
-        */
+            //return "I am sorry you were not found in the RSVP List, ".$data['firstname']." ".$data['lastname']. " </br> Please contact Gayle or Phil for assistance.";
+        }*/
+        #var_dump($fetch);
 
         $prep_s = $this->SQL->conn->prepare("SELECT id FROM `$this->db`.rsvp_confirmed WHERE firstname like ? AND lastname LIKE ?");
         $prep_s->bindparam(1, $firstname, PDO::PARAM_STR);
@@ -505,6 +499,8 @@ class core
             return $err[2];
         }
         $fetch_s = $prep_s->fetchAll(2);
+
+        #var_dump($fetch_s);
 
         if(empty($fetch_s) and !empty($fetch['id']))
         {
