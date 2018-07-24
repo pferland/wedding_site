@@ -296,7 +296,7 @@ class core
     function getWeddingDetails()
     {
         $query = $this->SQL->conn->query("SELECT wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
-            hotel_name, hotel_location, hotel_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
+            hotel_name, hotel_location, hotel_gmaps_link, meet_greet_gmaps_link,  brunch_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
             FROM `$this->db`.details_page_info WHERE id = 1");
         $err = $this->SQL->conn->errorInfo();
         if($err[0] !== "00000")

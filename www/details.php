@@ -18,6 +18,10 @@ $wedding->smarty->assign('hotel_location', $wedding_details['hotel_location']);
 $wedding->smarty->assign('hotel_gmaps_link', $wedding_details['hotel_gmaps_link']);
 $wedding->smarty->assign('hotel_room_link', $wedding_details['hotel_room_link']);
 
+$wedding->smarty->assign('meet_greet_gmaps_link', $wedding_details['meet_greet_gmaps_link']);
+
+$wedding->smarty->assign('brunch_gmaps_link', $wedding_details['brunch_gmaps_link']);
+
 $wedding->smarty->assign('daysuntil', $wedding->daysUntil());
 
 if( (int)$wedding_details['wedding_reception_same_location'] === 0)
@@ -34,3 +38,4 @@ if( (int)$wedding_details['wedding_reception_same_location'] === 0)
 {
     $wedding->smarty->display("details_wedding.tpl");
 }
+
