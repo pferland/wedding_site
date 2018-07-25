@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(E_ALL);
 class core
 {
     private $GuestBookAlertSendToEmail;
@@ -177,7 +177,7 @@ class core
         $ret = $prep_c->fetchAll(2);
         if(is_null(@$ret[0]))
         {
-            return 1;
+            return 0;
         }else
         {
             return (int) $ret[0]['guest'];
@@ -205,12 +205,34 @@ class core
     function getGuestBookPosts()
     {
         $query = $this->SQL->conn->query("SELECT * FROM `$this->db`.guestbook ORDER BY id ASC");
-        $err = $query->errorInfo();
+        $err = $this->SQL->conn->errorInfo();
         if($err[0] !== "00000")
         {
             return array();
         }
         #var_dump($query->fetchAll(2));
+        return $query->fetchAll(2);
+    }
+
+    function getCouplePhotos()
+    {
+        $query = $this->SQL->conn->query("SELECT `photo_path`, `subtext` FROM `$this->db`.couple_photos ORDER BY id ASC");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
+        return $query->fetchAll(2);
+    }
+
+    function getWeddingPartyPhotos()
+    {
+        $query = $this->SQL->conn->query("SELECT `photo_path`, `name`, `title` FROM `$this->db`.wedding_party_photos ORDER BY id ASC");
+        $err = $this->SQL->conn->errorInfo();
+        if($err[0] !== "00000")
+        {
+            return array();
+        }
         return $query->fetchAll(2);
     }
 
@@ -296,7 +318,7 @@ class core
     function getWeddingDetails()
     {
         $query = $this->SQL->conn->query("SELECT wedding_location_name, wedding_town, wedding_date, wedding_time, wedding_gmaps_link, wedding_reception_same_location, 
-            hotel_name, hotel_location, hotel_gmaps_link, meet_greet_gmaps_link,  brunch_gmaps_link, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link
+            hotel_name, hotel_location, hotel_gmaps_link, meet_greet_gmaps_link, meet_greet_text, brunch_gmaps_link, brunch_text, reception_name, reception_town, reception_date, reception_time, reception_gmaps_link, wedding_attire, reception_attire, hotel_room_link, other_info
             FROM `$this->db`.details_page_info WHERE id = 1");
         $err = $this->SQL->conn->errorInfo();
         if($err[0] !== "00000")

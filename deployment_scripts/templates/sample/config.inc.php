@@ -42,7 +42,9 @@ $GuestbookSpamList = array(
     'href=',
     'href =',
     'href = ',
-    'loans online'
+    'http://',
+    'https://',
+    'loans'
 );
 
 

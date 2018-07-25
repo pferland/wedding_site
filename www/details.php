@@ -12,6 +12,7 @@ $wedding->smarty->assign('wedding_date', $wedding_details['wedding_date']);
 $wedding->smarty->assign('wedding_time', $wedding_details['wedding_time']);
 $wedding->smarty->assign('wedding_gmaps_link', $wedding_details['wedding_gmaps_link']);
 $wedding->smarty->assign('wedding_attire', $wedding_details['wedding_attire']);
+$wedding->smarty->assign('other_info', $wedding_details['other_info']);
 
 $wedding->smarty->assign('hotel_name', $wedding_details['hotel_name']);
 $wedding->smarty->assign('hotel_location', $wedding_details['hotel_location']);
@@ -19,8 +20,10 @@ $wedding->smarty->assign('hotel_gmaps_link', $wedding_details['hotel_gmaps_link'
 $wedding->smarty->assign('hotel_room_link', $wedding_details['hotel_room_link']);
 
 $wedding->smarty->assign('meet_greet_gmaps_link', $wedding_details['meet_greet_gmaps_link']);
+$wedding->smarty->assign('meet_greet_text', $wedding_details['meet_greet_text']);
 
 $wedding->smarty->assign('brunch_gmaps_link', $wedding_details['brunch_gmaps_link']);
+$wedding->smarty->assign('brunch_text', $wedding_details['brunch_text']);
 
 $wedding->smarty->assign('daysuntil', $wedding->daysUntil());
 

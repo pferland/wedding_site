@@ -29,6 +29,14 @@ $hotel_gmaps_link  = "";
 // Link to the website of the hotel for your wedding for people to book rooms.
 $hotel_room_link = "";
 
+// The Information for the Day before Meet and Greet (Google Maps Link and a text blurb)
+$meet_greet_gmaps_link = "";
+$meet_greet_text = "";
+
+// The Information for the morning after Brunch (Google Maps Link and a text blurb)
+$brunch_gmaps_link = "";
+$brunch_text = "";
+
 // Reception Information (if different than the Wedding, if they are the same location, leave values blank)
 // Name of the Place the reception is happening at
 $reception_name  = "";
@@ -55,4 +63,21 @@ $registry_links =  array(
         'link' => "",
         'image' => ""
     )
+);
+
+// Photos and Descriptions for the Wedding Party Page.
+$wedding_party_photos = array(
+    // Relative URL path (ie /templates/imgs/person.jpg would then resolve to http://wedding.site.com/templates/imgs/person.jpg
+    // Name of the Person
+    // Their title in the Wedding Party
+    array('/template/imgs/person.jpg','Person McPersonface','Best Person'),
+    array('/template/imgs/person.jpg','Boaty McBoatface','Boat of Honor'),
+);
+
+// List of Photos of the couple for the Photos Page.
+$couple_photos = array(
+    // Relative URL path (ie /templates/imgs/photos/bride.jpg would then resolve to http://wedding.site.com/templates/imgs/photos/bride.jpg
+    // Any Alt-text that you would like to have.
+    array('/templates/imgs/photos/bride.jpg','The Bride in college.'),
+    array('/templates/imgs/photos/groom.jpg','The Groom in college.'),
 );

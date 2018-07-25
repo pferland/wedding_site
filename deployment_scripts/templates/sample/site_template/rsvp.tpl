@@ -26,11 +26,11 @@
                 }
 
                 function toggleSong() {
-                    var checkbox = document.getElementById('norequest');
+                    var checkbox = document.getElementById('song_request_flag');
                     var song_artist = document.getElementById('song_artist');
                     var song_name = document.getElementById('song_name');
-                    updateToggle = checkbox.checked ? song_artist.disabled=true : song_artist.disabled=false;
-                    updateToggle2 = checkbox.checked ? song_name.disabled=true : song_name.disabled=false;
+                    updateToggle = checkbox.checked ? song_artist.disabled=false : song_artist.disabled=true;
+                    updateToggle2 = checkbox.checked ? song_name.disabled=false : song_name.disabled=true;
                 }
 			</script>
 			<form action="/rsvp.php" method="post">
@@ -79,7 +79,7 @@
 					</tr>
 					<tr>
 						<td>
-							I do not have a song to request <input type="checkbox" name="norequest" id="norequest" value="1" {$norequest|default:''} onclick="toggleSong();" />
+							I have a song to request <input type="checkbox" name="song_request_flag" id="song_request_flag" value="1" {$norequest|default:''} onclick="toggleSong();" />
 						</td>
 					</tr>
 					<tr>
@@ -87,7 +87,7 @@
 							Song Artist:
 						</td>
 						<td>
-							<input style="width:500px;" id="song_artist" name="song_artist" id="song_artist" value="{$song_artist|default:''}"/>
+							<input style="width:500px;" id="song_artist" name="song_artist" id="song_artist" value="{$song_artist|default:''}" disabled/>
 						</td>
 					</tr>
 					<tr>
@@ -95,7 +95,7 @@
 							Song Name:
 						</td>
 						<td>
-							<input style="width:500px;" id="song_name" name="song_name" id="song_name" value="{$song_name|default:''}"/>
+							<input style="width:500px;" id="song_name" name="song_name" id="song_name" value="{$song_name|default:''}" disabled/>
 						</td>
 					</tr>
 					<tr>
@@ -104,7 +104,7 @@
 						</td>
 						<td>
 							<input type="hidden" name="step" value="enterguests">
-							<input id="submit" type="submit" name="Submit" style="font-size: 23px" value="Submit">
+							<input id="submit" type="submit" name="Next" style="font-size: 23px" value="Submit">
 						</td>
 					</tr>
 				</table>

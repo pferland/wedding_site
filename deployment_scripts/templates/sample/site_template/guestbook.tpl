@@ -35,7 +35,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="text-align:center;height: 256px">
-							<textarea onkeyup="return CharacterCount();" onkeydown="return CharacterCount();" id="message" name="message" style=" width: 98%; height: 250px" ></textarea>
+							<textarea onkeyup="return CharacterCount();" onkeydown="return CharacterCount();" id="message" name="message" style=" width: 98%; height: 250px; white-space: pre-wrap;" ></textarea>
 						</td>
 					</tr>
 					<tr>

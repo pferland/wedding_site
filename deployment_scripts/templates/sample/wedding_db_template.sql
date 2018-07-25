@@ -4,74 +4,75 @@ use {{db_name}};
 
 CREATE TABLE {{db_name}}.guestbook
 (
-    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name varchar(255) NOT NULL,
-    time varchar(255) NOT NULL,
-    message text NOT NULL
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+name varchar(255) NOT NULL,
+time varchar(255) NOT NULL,
+  message text NOT NULL
 );
 
 CREATE TABLE {{db_name}}.rsvp_confirmed
 (
-    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    firstname varchar(255) NOT NULL,
-    lastname varchar(255) NOT NULL,
-    guest tinyint(4) DEFAULT '0' NOT NULL,
-    attending varchar(3) DEFAULT 'no' NOT NULL,
-    food_allergies text,
-    comment text,
-    timestamp varchar(255) NOT NULL,
-    validate_id int(11)
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  firstname varchar(255) NOT NULL,
+  lastname varchar(255) NOT NULL,
+  guest_firstname varchar(255) NOT NULL,
+  guest_lastname varchar(255) NOT NULL,
+  attending varchar(3) DEFAULT 'no' NOT NULL,
+  food_allergies text,
+comment text,
+timestamp varchar(255) NOT NULL,
+  validate_id int(11)
 );
 
 CREATE TABLE {{db_name}}.rsvp_guests
 (
-    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    rsvp_id int(11) NOT NULL,
-    firstname varchar(255) NOT NULL,
-    lastname varchar(255) NOT NULL
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  rsvp_id int(11) NOT NULL,
+  firstname varchar(255) NOT NULL,
+  lastname varchar(255) NOT NULL
 );
 
 CREATE TABLE {{db_name}}.rsvp_validate
 (
-    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    title varchar(255),
-    firstname varchar(255),
-    middlename varchar(255),
-    lastname varchar(255),
-    partnertitle varchar(255),
-    partnerfirstname varchar(255),
-    partnerlastname varchar(255),
-    partnermiddlename varchar(255),
-    namestogether varchar(255),
-    namesformal varchar(255),
-    `namessuper-formal` varchar(255),
-    namesfamily varchar(255),
-    company varchar(255),
-    address1 varchar(255),
-    address2 varchar(255),
-    city varchar(255),
-    state varchar(255),
-    postalcode varchar(255),
-    country varchar(255),
-    mainphone varchar(255),
-    cellphone varchar(255),
-    homephone varchar(255),
-    email varchar(255),
-    birthday varchar(255),
-    partnerbirthday varchar(255),
-    anniversary varchar(255),
-    notes text,
-    groups text,
-    guest int(11),
-    lastupdated varchar(255)
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  title varchar(255),
+  firstname varchar(255),
+  middlename varchar(255),
+  lastname varchar(255),
+  partnertitle varchar(255),
+  partnerfirstname varchar(255),
+  partnerlastname varchar(255),
+  partnermiddlename varchar(255),
+  namestogether varchar(255),
+  namesformal varchar(255),
+  `namessuper-formal` varchar(255),
+  namesfamily varchar(255),
+  company varchar(255),
+  address1 varchar(255),
+  address2 varchar(255),
+  city varchar(255),
+  state varchar(255),
+  postalcode varchar(255),
+  country varchar(255),
+  mainphone varchar(255),
+  cellphone varchar(255),
+  homephone varchar(255),
+  email varchar(255),
+  birthday varchar(255),
+  partnerbirthday varchar(255),
+  anniversary varchar(255),
+  notes text,
+  groups text,
+  guest int(11),
+  lastupdated varchar(255)
 );
 
 CREATE TABLE {{db_name}}.song_request
 (
-    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    rsvp_id int(11) NOT NULL,
-    song_title varchar(255) NOT NULL,
-    song_artist varchar(255) NOT NULL
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  rsvp_id int(11) NOT NULL,
+  song_title varchar(255) NOT NULL,
+  song_artist varchar(255) NOT NULL
 );
 
 CREATE TABLE {{db_name}}.details_page_info
@@ -91,7 +92,12 @@ CREATE TABLE {{db_name}}.details_page_info
   reception_date varchar(255),
   reception_time varchar(255),
   reception_gmaps_link text,
+  brunch_gmaps_link text,
+  brunch_text text,
+  meet_greet_gmaps_link text,
+  meet_greet_text text,
   wedding_attire varchar(255),
+  other_info text,
   reception_attire varchar(255),
   hotel_room_link text
 );
@@ -105,7 +111,22 @@ CREATE TABLE {{db_name}}.wedding_story
 CREATE TABLE {{db_name}}.registry_links
 (
   id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  name varchar(255),
+name varchar(255),
   url text,
   img_url text
+);
+
+CREATE TABLE {{db_name}}.wedding_party_photos
+(
+  id int PRIMARY KEY AUTO_INCREMENT,
+  name text,
+  title varchar(255),
+  photo_path text
+);
+
+CREATE TABLE {{db_name}}.couple_photos
+(
+  id int PRIMARY KEY AUTO_INCREMENT,
+  photo_path text,
+  subtext text
 );

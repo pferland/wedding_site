@@ -20,11 +20,15 @@
 					<td class="style15">Attire:</td>
 					<td class="style13" style="width: 50%">{$wedding_attire}</td>
 				</tr>
+				<tr>
+					<td class="style15">Other Information:</td>
+					<td class="style13" style="width: 50%">{$other_info}</td>
+				</tr>
 			</table>
 			<br />
 			<table style="margin: auto; width: 75%;" class="details_table_body">
 				<tr>
-					<th> Wedding & Reception Location</th>
+					<th style="font-size: 40px"> Wedding & Reception Location</th>
 				</tr>
 				<tr>
 					<td>
@@ -35,7 +39,13 @@
 			<br />
 			<table style="margin: auto; width: 75%;" class="details_table_body">
 				<tr>
-					<th> Hotel of choice <br/>{$hotel_name} <br><a href="{$hotel_room_link}">Click here for room booking</a></th>
+					<th style="font-size: 40px"> Hotel of choice</th>
+				</tr>
+				<tr>
+					<th>{$hotel_name} <br>
+						<a href="{$hotel_room_link}">Click here for room booking</a></br>
+						Transportation will be provided from Hotel to Venue for the day of the wedding.
+					</th>
 				</tr>
 				<tr>
 					<td>
@@ -43,6 +53,37 @@
 					</td>
 				</tr>
 			</table>
+
+			<br />
+			<table style="margin: auto; width: 75%;" class="details_table_body">
+				<tr>
+					<th style="font-size: 40px">Friday Night Meet and Greet</th>
+				</tr>
+				<tr>
+					<th>{$meet_greet_text}</th>
+				</tr>
+				<tr>
+					<td>
+						<iframe src="{$meet_greet_gmaps_link}" width="100%" height="480" frameborder="1" style="border:2px" allowfullscreen></iframe>
+					</td>
+				</tr>
+			</table>
+
+			<br />
+			<table style="margin: auto; width: 75%;" class="details_table_body">
+				<tr>
+					<th style="font-size: 40px">Sunday Brunch</th>
+				</tr>
+				<tr>
+					<th>{$brunch_text}</th>
+				</tr>
+				<tr>
+					<td>
+						<iframe src="{$brunch_gmaps_link}" width="100%" height="480" frameborder="1" style="border:2px" allowfullscreen></iframe>
+					</td>
+				</tr>
+			</table>
+
 			</span>
 		</td>
 	</tr>

@@ -5,57 +5,16 @@
 		<br />
 		<div align="center">
 			<span class="details_header">Wedding Party</span>
-
 			<table class="tablewall" style="z-index: 1;position: relative;">
+				{foreach $filepaths as $filepath}
 				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/christy_matt.jpg" /></td>
+					<td class="cellwall"><img width="400" src="{$filepath.photo_path}" /></td>
 				</tr>
 				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Christy And Matt Warner</b><br>Officiant / Matron of Honor and Groomsman</td>
+					<td class="table_bg" style="text-align: center; font-size: 18px"><b>{$filepath.name}</b><br>{$filepath.title}</td>
 				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/albert.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Albert Dionne</b><br>BestMan</td>
-				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/Rachel.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Rachel Burkes</b><br>Maid of Honor</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/sheila.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Sheila Pickett</b><br>Bridesmaid</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/kristen.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Kirsten Raymond</b><br>Bridesmaid</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/keith.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Keith Ferland</b><br>Groomsman</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="cellwall"><img width="400" src="/templates/default/imgs/stephanie.jpg" /></td>
-				</tr>
-				<tr>
-					<td class="table_bg" style="text-align: center; font-size: 18px"><b>Stephanie Annis</b><br>Bridesmaid</td>
-					<td></td>
-				</tr>
+				{/foreach}
 			</table>
-
 		</div>
 		<br />
 	</td>

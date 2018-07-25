@@ -21,6 +21,9 @@ if not, write to the
 
 class SQL
 {
+    private $db;
+    private $service;
+    private $host;
     function __construct($config)
     {
         $this->host             = $config['host'];
