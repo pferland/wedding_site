@@ -32,7 +32,6 @@ switch(strtolower(@$_POST['step']))
 
         if($reload)
         {
-
             $wedding->SentRSVPAlert($step_values, $_SERVER['REMOTE_ADDR'] . "  X-Forward: " . @$_SERVER['HTTP_X_FORWARDED_FOR']);
             $wedding->smarty->assign("error_array", $wedding->WordWrapArray($error));
             $wedding->smarty->assign("firstname", $firstname);
@@ -59,7 +58,7 @@ switch(strtolower(@$_POST['step']))
         if ( $num_allowed_guests > 0 )
         {
             $GuestData = $wedding->getRsvpGuestData($firstname, $lastname);
-            #var_dump($firstname, $lastname, $GuestData);
+            var_dump($firstname, $lastname, $GuestData);
 
             if($GuestData[1] != "")
             {
@@ -131,8 +130,6 @@ switch(strtolower(@$_POST['step']))
 
         $num_allowed_guests = $wedding->getAllowedGuestsForAttendee($step_values['firstname'], $step_values['lastname']);
         $step_values['num_allowed_guests'] = $num_allowed_guests;
-
-        #var_dump($step_values);
 
         if($num_allowed_guests > 1)
         {
@@ -230,7 +227,8 @@ switch(strtolower(@$_POST['step']))
             $wedding->smarty->assign('error_array', $wedding->WordWrapArray($error));
             $wedding->smarty->display("rsvp_error.tpl");
             break;
-        }else
+        }
+        else
         {
             $step_values['validate_id'] = (int) $val_ret;
             #var_dump($step_values);

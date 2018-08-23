@@ -9,7 +9,7 @@ class core
     private $RSVPAlertSendToEmail;
     private $RSVPAlertSendFromEmail;
     private $RSVPAlertSendFromEmail_PWD;
-    public $RSVPAlertSendFlag;
+    public $RSVPAlertSendEmailFlag;
     public $guestbook_txt_limit;
     public $rsvp_comment_txt_limit;
     private $SpamArray;
@@ -36,7 +36,9 @@ class core
         $this->RSVPAlertSendToEmail = $RSVPAlertSendToEmail;
         $this->RSVPAlertSendFromEmail = $RSVPAlertSendFromEmail;
         $this->RSVPAlertSendFromEmail_PWD = $RSVPAlertSendFromEmail_PWD;
-        $this->RSVPAlertSendFlag = $RSVPAlertSendFlag;
+        $this->RSVPAlertSendEmailFlag = $RSVPAlertSendEmailFlag;
+        $this->RSVPAlertSendTextFlag = $RSVPAlertSendTextFlag;
+        $this->RSVPAlertSendTextEmail = $RSVPAlertSendTextEmail;
         $this->guestbook_txt_limit = $guestbook_txt_limit;
         $this->rsvp_comment_txt_limit = $rsvp_comment_txt_limit;
 
@@ -59,7 +61,7 @@ class core
 
     function daysUntil()
     {
-        $now = time(); // or your date as well
+        $now = time();
         $your_date = strtotime($this->endDate);
         $datediff = $now - $your_date;
 
@@ -95,12 +97,15 @@ class core
 
             $this->SendEmail( $this->GuestBookAlertSendToEmail, $this->GuestBookAlertSendFromEmail, $this->GuestBookAlertSendFromEmail_PWD, $subject, $compiled);
         }
-
+        if($this->RSVPAlertSendTextFlag)
+        {
+            $this->SendEmail($this->RSVPAlertSendTextEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
+        }
     }
 
     function SentRSVPAlert($data, $ip, $error_flag = false)
     {
-        if($this->RSVPAlertSendFlag)
+        if($this->RSVPAlertSendEmailFlag)
         {
             $data['Remote_IP'] = $ip;
             $data_string = "<p>" . var_export($data, true) . "</p>";
@@ -112,8 +117,11 @@ class core
             {
                 $subject = "New Successful Registration For '.$this->env.'RSVP ( " . date("Y-m-d H:i:s") . "  )";
             }
-
             $this->SendEmail($this->RSVPAlertSendToEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
+        }
+        if($this->RSVPAlertSendTextFlag)
+        {
+            $this->SendEmail($this->RSVPAlertSendTextEmail, $this->RSVPAlertSendFromEmail, $this->RSVPAlertSendFromEmail_PWD, $subject, $data_string);
         }
     }
 

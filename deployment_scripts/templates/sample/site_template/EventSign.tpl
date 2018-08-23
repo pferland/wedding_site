@@ -26,70 +26,17 @@
 			<br>
 			<br>
 			<div align="center">
-				<span style="position:relative;font-size:120px" class="details_header">Welcome to the </span>
-				<br>
-				<span style="position:relative;font-size:120px" class="details_header">Wedding Celebration of </span>
-				<br>
-				<span style="position:relative;font-size:120px" class="details_header">Phil & Gayle</span>
-				<table style="height: 75%; z-index: 1;position: relative;font-size:48px; font-weight: bold">
-					<tr>
-						<td style="width:250px">
-							3:00PM
-						</td>
-						<td>
-							Ceremony
-						</td>
-					</tr>
-					<tr>
-						<td>
-							3:30PM
-						</td>
-						<td>
-							Cocktails
-						</td>
-					</tr>
-					<tr>
-						<td>
-							5:00PM
-						</td>
-						<td>
-							First Dance
-						</td>
-					</tr>
-					<tr>
-						<td>
-							5:30PM
-						</td>
-						<td>
-							Dinner
-						</td>
-					</tr>
-					<tr>
-						<td>
-							6:30PM
-						</td>
-						<td>
-							Speeches
-						</td>
-					</tr>
-					<tr>
-						<td>
-							7:00PM
-						</td>
-						<td>
-							Cake & PARTY!
-						</td>
-					</tr>
-					<tr>
-						<td>
-							9:00PM
-						</td>
-						<td>
-							Send Off
-						</td>
-					</tr>
-				</table>
 			</div>
 		</td>
 	</tr>
-{include file="foot.tpl"}
+	<tr>
+		<td style="height: 240px; z-index:1000; position:relative;" class="style8">
+		</td>
+	</tr>
+</table>
+<div style="position: fixed;left: 0px;" >
+	<img style="z-index: 1;position: fixed; bottom: 0px; left: 0px;" class="imagecss" src="{$template_url}imgs/sunflowers_bottom_corner.gif" />
+</div>
+</body>
+
+</html>
